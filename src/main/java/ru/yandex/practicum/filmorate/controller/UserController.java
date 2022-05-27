@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.HashSet;
@@ -9,7 +10,6 @@ import java.util.Set;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
     private final Set<User> users = new HashSet<>();
 
     @PostMapping
@@ -17,7 +17,7 @@ public class UserController {
         if (users.add(user))
             return user;
         else
-            throw new RuntimeException(); //TODO fix this
+            throw new ValidationException(""); //TODO fix this
     }
 
     @GetMapping
@@ -30,6 +30,6 @@ public class UserController {
         if (users.add(user))
             return user;
         else
-            throw new RuntimeException(); //TODO fix this
+            throw new ValidationException(""); //TODO fix this
     }
 }
