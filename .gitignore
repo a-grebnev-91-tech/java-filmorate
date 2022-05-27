@@ -42,3 +42,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### My test class ###
+TestClass.java
