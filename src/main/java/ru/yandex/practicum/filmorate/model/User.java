@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
     @EqualsAndHashCode.Include
-    private final long id;
+    private long id;
     @NotBlank
     @Email(message = "Email should be valid")
     private String email;

@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Film {
     @EqualsAndHashCode.Include
-    private final long id;
+    private long id;
     @NotBlank(message = "Name shouldn't be null or empty")
     private String name;
     @Size(max = 200, message = "Description shouldn't be larger than 200 characters")
