@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.ConstraintViolation;
@@ -21,16 +19,14 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@WebMvcTest(FilmController.class)
 class FilmValidationTest {
 
+    private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     private Validator validator;
 
     @BeforeEach
     public void setUpValidator() {
-        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-            validator = factory.getValidator();
-        }
+        validator = factory.getValidator();
     }
 
     @MethodSource("test1MethodSource")
@@ -104,14 +100,14 @@ class FilmValidationTest {
     private String getDescriptionByLength(int length) {
         return "s".repeat(Math.max(0, length));
     }
+
     private Film getValidFilm() {
         return new Film(
                 0,
                 "Java Virtual ExMachine",
                 "Epic movie about java compiler",
-                LocalDate.of(1995, 4, 23),
+                LocalDate.of(1995, 5, 23),
                 42
         );
     }
-
 }
