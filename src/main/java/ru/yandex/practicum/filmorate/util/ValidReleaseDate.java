@@ -12,7 +12,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Constraint(validatedBy = ReleaseDateValidator.class)
 public @interface ValidReleaseDate {
+    public abstract String value() default "28.12.1895";
+
     public abstract String message() default "Release date is invalid";
+
     public abstract Class<?>[] groups() default {};
+
     public abstract Class<? extends Payload>[] payload() default {};
 }

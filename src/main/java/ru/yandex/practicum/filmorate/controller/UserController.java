@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.IllegalIdException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -20,10 +19,10 @@ public class UserController {
 
     @PostMapping
     public User create(@RequestBody @Valid User user) {
-//        if (user.getId() != 0) {
-//            log.warn("Attempt to create user with assigned id");
-//            throw new IllegalIdException("Cannot create user with assigned id");
-//        }
+        if (user.getId() != 0) {
+            log.warn("Attempt to create user with assigned id");
+            throw new IllegalIdException("Cannot create user with assigned id");
+        }
         long currentId = generateId();
         user.setId(currentId);
         if (user.getName() == null || user.getName().isBlank()) {
