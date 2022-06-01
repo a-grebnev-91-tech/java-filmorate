@@ -98,7 +98,7 @@ class FilmValidationTest {
     }
 
     private String getDescriptionByLength(int length) {
-        return "s".repeat(Math.max(0, length));
+        return "s".repeat(length);
     }
 
     private Film getValidFilm() {
