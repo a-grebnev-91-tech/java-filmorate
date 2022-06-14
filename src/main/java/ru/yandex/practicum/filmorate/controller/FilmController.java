@@ -1,9 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.IllegalIdException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -12,20 +13,18 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final Map<Long, Film> films = new HashMap<>();
-    private long id = 1;
+    private final FilmService service;
+    private final Map<Long, Film> films;
+
+    @Autowired
+    public FilmController(FilmService service) {
+        this.service = service;
+        this.films = new HashMap<>();
+    }
 
     @PostMapping
     public Film create(@RequestBody @Valid Film film) {
-        if (film.getId() != 0) {
-            log.warn("Attempt to create film with assigned id");
-            throw new IllegalIdException("Cannot create film with assigned id");
-        }
-        long currentId = generateId();
-        film.setId(currentId);
-        log.info("Add film {}", film);
-        films.put(currentId, film);
-        return film;
+        return service.create(film);
     }
 
     @GetMapping
@@ -35,17 +34,8 @@ public class FilmController {
 
     @PutMapping
     public Film update(@RequestBody @Valid Film film) {
-        long id = film.getId();
-        if (films.containsKey(id)) {
-            log.info("Update film {}", film);
-            films.put(id, film);
-            return film;
-        }
-        log.warn("Attempt to update non-existing film");
-        throw new IllegalIdException("Id " + id + " isn't exist");
+        return service.update(film);
     }
 
-    private long generateId() {
-        return id++;
-    }
+
 }

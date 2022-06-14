@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -94,6 +95,32 @@ public class UserValidationTest {
                 Arguments.of(blankEmail, "blank email"),
                 Arguments.of(futureBirthday, "birthday tomorrow")
         );
+    }
+
+    @Test
+    public void test3_shouldSetUserNameByLogin() {
+        String login = "login";
+        String name = null;
+        User user = new User(
+                0,
+                "email@email.em",
+                login,
+                name,
+                LocalDate.of(1999,12,12)
+        );
+        assertEquals(login, user.getName(), "Name setup through constructor fail");
+        user.setName("name");
+        assertEquals("name", user.getName(), "Name changing fail");
+        user.setName(name);
+        assertEquals(login, user.getName(), "Name changing fail");
+        User user1 = new User();
+        user1.setLogin("login");
+        assertEquals(login, user1.getName(), "Name setup through setter fail");
+        user1.setName("");
+        assertEquals(login, user1.getName(), "Name changing fail");
+        user1.setName("name");
+        assertEquals("name", user1.getName(), "Name changing fail");
+
     }
 
 
