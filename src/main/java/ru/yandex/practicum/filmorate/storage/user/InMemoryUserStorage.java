@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IllegalIdException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -46,7 +45,7 @@ public class InMemoryUserStorage implements UserStorage{
         User user = users.get(id);
         if (user == null) {
             //todo to exc. handler
-            throw new NotFoundException("Film with id " + id + " isn't exist.");
+            throw new NotFoundException("User with id " + id + " isn't exist.");
         }
         return user;
     }

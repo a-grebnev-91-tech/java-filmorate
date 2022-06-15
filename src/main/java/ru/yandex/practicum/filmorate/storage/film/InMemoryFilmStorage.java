@@ -7,9 +7,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-//TODO подумать насчет где будем логировать
+//TODO перенести логирование в контроллер и эксепшн хэндлер
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {

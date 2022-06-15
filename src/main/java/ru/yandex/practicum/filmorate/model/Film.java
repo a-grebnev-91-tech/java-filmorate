@@ -10,8 +10,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Film {
+public class Film extends BaseEntity{
     @Getter
     @Setter
     @Size(max = 200, message = "Description shouldn't be larger than 200 characters")
@@ -20,10 +19,6 @@ public class Film {
     @Setter
     @Positive(message = "Duration should be greater than 0")
     private int duration;
-    @Getter
-    @Setter
-    @EqualsAndHashCode.Include
-    private long id;
     private final Set<Long> likes;
     @Getter
     @Setter
@@ -39,8 +34,8 @@ public class Film {
     }
 
     public Film(long id, String name, String description, LocalDate releaseDate, int duration) {
-        this();
-        this.id = id;
+        super(id);
+        this.likes = new HashSet<>();
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;

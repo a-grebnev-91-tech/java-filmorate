@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import jdk.jshell.spi.ExecutionControl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
@@ -17,7 +18,7 @@ public class UserService {
     }
 
     public boolean addFriend(final long firstId, final long secondId) {
-
+        throw new RuntimeException("Not implemented");
     }
 
     public User create(final User user) {
@@ -37,7 +38,7 @@ public class UserService {
     }
 
     public List<User> getMutualFriends(final long firstId, final long secondId) {
-
+        throw new RuntimeException("Not impl");
     }
 
     public User update(final User user) {

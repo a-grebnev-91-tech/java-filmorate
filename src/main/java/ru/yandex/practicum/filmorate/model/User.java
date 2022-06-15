@@ -7,8 +7,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class User {
+public class User extends BaseEntity{
     @Getter
     @Setter
     @Past
@@ -19,10 +18,6 @@ public class User {
     @Email(message = "Email should be valid")
     private String email;
     private final Set<Long> friends;
-    @Getter
-    @Setter
-    @EqualsAndHashCode.Include
-    private long id;
     @Getter
     @NotNull
     @Pattern(regexp = "\\S+")
@@ -35,9 +30,9 @@ public class User {
     }
 
     public User(long id, String email, String login, String name, LocalDate birthday) {
+        super(id);
         this.birthday = birthday;
         this.email = email;
-        this.id = id;
         this.login = login;
         this.name = name == null || name.isBlank() ? login : name;
         friends = new HashSet<>();
