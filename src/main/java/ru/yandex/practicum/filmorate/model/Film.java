@@ -53,4 +53,14 @@ public class Film extends BaseEntity{
     public Set<Long> getLikes() {
         return Set.copyOf(likes);
     }
+
+    @Override
+    public String toString() {
+        return "Film{" +
+                "id=" + getId() +
+                "duration=" + duration +
+                ", name='" + name + '\'' +
+                ", releaseDate=" + releaseDate +
+                '}';
+    }
 }

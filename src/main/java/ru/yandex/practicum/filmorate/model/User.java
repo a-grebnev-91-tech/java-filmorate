@@ -50,4 +50,15 @@ public class User extends BaseEntity{
         else
             this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + getId() +
+                ", email='" + email + '\'' +
+                ", login='" + login + '\'' +
+                ", name='" + name + '\'' +
+                "birthday=" + birthday +
+                '}';
+    }
 }

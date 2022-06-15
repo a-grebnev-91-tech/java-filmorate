@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.BaseService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -12,28 +13,43 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/films")
-public class FilmController {
-    private final FilmService service;
-    private final Map<Long, Film> films;
+public class FilmController extends BaseController<Film> {
 
     @Autowired
     public FilmController(FilmService service) {
-        this.service = service;
-        this.films = new HashMap<>();
+        super(service);
     }
 
     @PostMapping
+    @Override
     public Film create(@RequestBody @Valid Film film) {
-        return service.create(film);
+        return super.create(film);
     }
 
+    @DeleteMapping("/{id}")
+    @Override
+    public Film delete(@PathVariable final long id) {
+        return super.delete(id);
+    }
+
+
     @GetMapping
+    @Override
     public Collection<Film> findAll() {
-        return films.values();
+        Collection<Film> films = super.findAll();
+        log.info("Get all films");
+        return  films;
+    }
+
+    @GetMapping("/{id}")
+    @Override
+    public Film get(@PathVariable final long id){
+        return super.get(id);
     }
 
     @PutMapping
+    @Override
     public Film update(@RequestBody @Valid Film film) {
-        return service.update(film);
+        return super.update(film);
     }
 }
