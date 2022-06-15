@@ -36,6 +36,4 @@ public class FilmController {
     public Film update(@RequestBody @Valid Film film) {
         return service.update(film);
     }
-
-
 }
