@@ -11,7 +11,7 @@ public class FilmRatingEntry extends BaseEntry {
         this.likes = new HashSet<>();
     }
 
-    public void addLike(long userId) {
+    public void addLike(final long userId) {
         likes.add(userId);
     }
 
@@ -23,11 +23,15 @@ public class FilmRatingEntry extends BaseEntry {
         return Set.copyOf(likes);
     }
 
+    public boolean isLiked(final long userId) {
+        return likes.contains(userId);
+    }
+
     public int rating() {
         return likes.size();
     }
 
-    public void removeLike(long userId) {
+    public void removeLike(final long userId) {
         likes.remove(userId);
     }
 }
