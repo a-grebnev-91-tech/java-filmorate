@@ -8,11 +8,11 @@ import ru.yandex.practicum.filmorate.model.BaseData;
 import java.util.*;
 
 @Component
-public class InMemoryStorage<T extends BaseData> implements Storage<T> {
+public class InMemoryDataStorage<T extends BaseData> implements DataStorage<T> {
     private long id;
     final Map<Long, T> storage;
 
-    public InMemoryStorage() {
+    public InMemoryDataStorage() {
         this.storage = new HashMap<>();
         this.id = 1;
     }

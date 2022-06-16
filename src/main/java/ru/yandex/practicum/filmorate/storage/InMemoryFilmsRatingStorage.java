@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.exception.EntryAlreadyExistException;
 import ru.yandex.practicum.filmorate.model.FilmsRatingData;
 
 @Component
-public class InMemoryFilmsRatingStorage extends InMemoryStorage<FilmsRatingData> {
+public class InMemoryFilmsRatingStorage extends InMemoryDataStorage<FilmsRatingData> {
 
     @Override
     public FilmsRatingData create(FilmsRatingData ratingData) {
