@@ -50,6 +50,10 @@ public class Film extends BaseEntity{
         return likes.size();
     }
 
+    public boolean removeLike(long userId) {
+        return likes.remove(userId);
+    }
+
     public Set<Long> getLikes() {
         return Set.copyOf(likes);
     }

@@ -4,8 +4,7 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class User extends BaseEntity{
     @Getter
@@ -38,6 +37,14 @@ public class User extends BaseEntity{
         friends = new HashSet<>();
     }
 
+    public void addFriend(final long friendId) {
+        friends.add(friendId);
+    }
+
+    public Set<Long> friends() {
+        return Set.copyOf(friends);
+    }
+
     public void setLogin(String login) {
         this.login = login;
         if (this.name == null)
@@ -49,6 +56,10 @@ public class User extends BaseEntity{
             this.name = this.login;
         else
             this.name = name;
+    }
+
+    public void removeFriend(final long friendId) {
+        friends.remove(friendId);
     }
 
     @Override

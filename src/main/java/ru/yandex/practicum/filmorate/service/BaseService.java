@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.BaseEntity;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public abstract class BaseService <T extends BaseEntity> {
@@ -30,6 +32,14 @@ public abstract class BaseService <T extends BaseEntity> {
 
     public Collection<T> getAll() {
         return storage.getAll();
+    }
+
+    public List<T> getSome(final Collection<Long> ids) {
+        return new ArrayList<>(storage.getSome(ids));
+    }
+
+    public boolean isEntityExist(final long id) {
+        return storage.isExist(id);
     }
 
     public T update(final T baseEntity) {

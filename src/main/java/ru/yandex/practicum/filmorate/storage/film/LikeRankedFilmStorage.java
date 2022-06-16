@@ -50,13 +50,10 @@ public class LikeRankedFilmStorage {
         }
     }
 
-    public void update(final Film oldVersion, final Film newVersion) {
-        if (oldVersion == null) {
-            add(newVersion);
-        } else {
-            remove(oldVersion);
-            add(newVersion);
-        }
+    public void update(final Film newVersion, final int oldRating) {
+        Map<Long, Film> filmsWithSameRating = films.get(oldRating);
+        filmsWithSameRating.remove(newVersion.getId());
+        add(newVersion);
     }
 
     private List<Integer> getAllRatings() {

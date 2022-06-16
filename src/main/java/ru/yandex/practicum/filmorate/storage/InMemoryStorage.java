@@ -5,9 +5,7 @@ import ru.yandex.practicum.filmorate.exception.IllegalIdException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.BaseEntity;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class InMemoryStorage<T extends BaseEntity> implements Storage<T> {
@@ -31,7 +29,7 @@ public class InMemoryStorage<T extends BaseEntity> implements Storage<T> {
     }
 
     @Override
-    public T delete(long id) {
+    public T delete(final long id) {
         T baseEntity = vault.remove(id);
         if (baseEntity == null) {
             throw new NotFoundException("Entity with id " + id + " isn't exist.");
@@ -40,7 +38,7 @@ public class InMemoryStorage<T extends BaseEntity> implements Storage<T> {
     }
 
     @Override
-    public T get(long id) {
+    public T get(final long id) {
         T baseEntity = vault.get(id);
         if (baseEntity == null) {
             throw new NotFoundException("Entity with id " + id + " isn't exist.");
@@ -54,7 +52,21 @@ public class InMemoryStorage<T extends BaseEntity> implements Storage<T> {
     }
 
     @Override
-    public T update(T baseEntity) {
+    public Collection<T> getSome(final Collection<Long> ids) {
+        List<T> entities = new ArrayList<>();
+        for (Long id : ids) {
+            entities.add(get(id));
+        }
+        return entities;
+    }
+
+    @Override
+    public boolean isExist(final long id) {
+        return vault.containsKey(id);
+    }
+
+    @Override
+    public T update(final T baseEntity) {
         long id = baseEntity.getId();
         if (vault.containsKey(id)) {
             vault.put(id, baseEntity);
