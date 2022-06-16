@@ -3,10 +3,10 @@ package ru.yandex.practicum.filmorate.model;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FilmRatingEntry extends BaseEntry {
+public class FilmsRatingData extends BaseData {
     private final Set<Long> likes;
 
-    public FilmRatingEntry(final long filmId) {
+    public FilmsRatingData(final long filmId) {
         super(filmId);
         this.likes = new HashSet<>();
     }

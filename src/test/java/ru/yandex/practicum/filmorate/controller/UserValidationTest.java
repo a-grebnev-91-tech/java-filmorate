@@ -6,7 +6,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import ru.yandex.practicum.filmorate.model.UserEntry;
+import ru.yandex.practicum.filmorate.model.UserData;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -31,18 +31,18 @@ public class UserValidationTest {
 
     @MethodSource("test1MethodSource")
     @ParameterizedTest(name = "{index}. Check valid user with {1}")
-    void test1_shouldCreateValidUser(UserEntry user, String testDescription) {
-        Set<ConstraintViolation<UserEntry>> violations = validator.validate(user);
+    void test1_shouldCreateValidUser(UserData user, String testDescription) {
+        Set<ConstraintViolation<UserData>> violations = validator.validate(user);
         assertTrue(violations.isEmpty());
     }
 
     Stream<Arguments> test1MethodSource() {
-        UserEntry simpleValidUser = getValidUser();
+        UserData simpleValidUser = getValidUser();
 
-        UserEntry userThatWasBornYesterday = getValidUser();
+        UserData userThatWasBornYesterday = getValidUser();
         userThatWasBornYesterday.setBirthday(LocalDate.now().minusDays(1));
 
-        UserEntry nullBirthday = getValidUser();
+        UserData nullBirthday = getValidUser();
         nullBirthday.setBirthday(null);
 
         return Stream.of(
@@ -54,35 +54,35 @@ public class UserValidationTest {
 
     @MethodSource("test2MethodSource")
     @ParameterizedTest(name = "{index}. Check invalid user with {1}")
-    void test2_shouldFailValidationInvalidUser(UserEntry user, String testResultDescription) {
-        Set<ConstraintViolation<UserEntry>> violations = validator.validate(user);
+    void test2_shouldFailValidationInvalidUser(UserData user, String testResultDescription) {
+        Set<ConstraintViolation<UserData>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());
         assertEquals(user, violations.iterator().next().getRootBean());
     }
 
     Stream<Arguments> test2MethodSource() {
-        UserEntry LoginWithSpace = getValidUser();
+        UserData LoginWithSpace = getValidUser();
         LoginWithSpace.setLogin("user puser");
 
-        UserEntry nullLogin = getValidUser();
+        UserData nullLogin = getValidUser();
         nullLogin.setLogin(null);
 
-        UserEntry blankLogin = getValidUser();
+        UserData blankLogin = getValidUser();
         blankLogin.setLogin(" ");
 
-        UserEntry failEmail = getValidUser();
+        UserData failEmail = getValidUser();
         failEmail.setEmail("email");
 
-        UserEntry nullEmail = getValidUser();
+        UserData nullEmail = getValidUser();
         nullEmail.setEmail(null);
 
-        UserEntry emptyEmail = getValidUser();
+        UserData emptyEmail = getValidUser();
         emptyEmail.setEmail("");
 
-        UserEntry blankEmail = getValidUser();
+        UserData blankEmail = getValidUser();
         blankEmail.setEmail(" ");
 
-        UserEntry futureBirthday = getValidUser();
+        UserData futureBirthday = getValidUser();
         futureBirthday.setBirthday(LocalDate.now().plusDays(1));
 
         return Stream.of(
@@ -101,7 +101,7 @@ public class UserValidationTest {
     public void test3_shouldSetUserNameByLogin() {
         String login = "login";
         String name = null;
-        UserEntry user = new UserEntry(
+        UserData user = new UserData(
                 0,
                 "email@email.em",
                 login,
@@ -113,7 +113,7 @@ public class UserValidationTest {
         assertEquals("name", user.getName(), "Name changing fail");
         user.setName(name);
         assertEquals(login, user.getName(), "Name changing fail");
-        UserEntry user1 = new UserEntry();
+        UserData user1 = new UserData();
         user1.setLogin("login");
         assertEquals(login, user1.getName(), "Name setup through setter fail");
         user1.setName("");
@@ -124,8 +124,8 @@ public class UserValidationTest {
     }
 
 
-    private UserEntry getValidUser() {
-        return new UserEntry(
+    private UserData getValidUser() {
+        return new UserData(
                 0,
                 "user@puser.ru",
                 "mecheniy",

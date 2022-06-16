@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.UserEntry;
+import ru.yandex.practicum.filmorate.model.UserData;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
 import java.util.List;
@@ -10,28 +10,28 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService extends BaseService<UserEntry> {
+public class UserService extends BaseService<UserData> {
 
     @Autowired
-    public UserService(Storage<UserEntry> storage) {
+    public UserService(Storage<UserData> storage) {
         super(storage);
     }
 
     public void addFriend(final long userId, final long friendId) {
-        UserEntry user = get(userId);
-        UserEntry friend = get(friendId);
+        UserData user = get(userId);
+        UserData friend = get(friendId);
         user.addFriend(friendId);
         friend.addFriend(userId);
     }
 
     //todo check
-    public List<UserEntry> getFriends(final long id) {
+    public List<UserData> getFriends(final long id) {
         Set<Long> friendsIds = get(id).friends();
         return getSome(friendsIds);
     }
 
     //TODO check
-    public List<UserEntry> getMutualFriends(final long userId, final long friendId) {
+    public List<UserData> getMutualFriends(final long userId, final long friendId) {
         Set<Long> userFriendsIds = get(userId).friends();
         Set<Long> friendFriendsIds = get(friendId).friends();
         Set<Long> mutualFriendsIds = userFriendsIds
@@ -42,8 +42,8 @@ public class UserService extends BaseService<UserEntry> {
     }
 
     public void removeFriend(final long userId, final long friendId) {
-        UserEntry user = get(userId);
-        UserEntry friend = get(friendId);
+        UserData user = get(userId);
+        UserData friend = get(friendId);
         user.removeFriend(friendId);
         friend.removeFriend(userId);
     }

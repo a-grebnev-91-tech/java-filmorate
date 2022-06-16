@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.BaseEntry;
+import ru.yandex.practicum.filmorate.model.BaseData;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Service
-public abstract class BaseService <T extends BaseEntry> {
+public abstract class BaseService <T extends BaseData> {
     private final Storage<T> storage;
 
     @Autowired

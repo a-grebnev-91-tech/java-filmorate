@@ -8,7 +8,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
-public class FilmEntry extends BaseEntry {
+public class FilmData extends BaseData {
     @Getter
     @Setter
     @Size(max = 200, message = "Description shouldn't be larger than 200 characters")
@@ -26,9 +26,9 @@ public class FilmEntry extends BaseEntry {
     @ValidReleaseDate(message = "Release date should be after 1895.12.28")
     private LocalDate releaseDate;
 
-    public FilmEntry() {}
+    public FilmData() {}
 
-    public FilmEntry(long id, String name, String description, LocalDate releaseDate, int duration) {
+    public FilmData(long id, String name, String description, LocalDate releaseDate, int duration) {
         super(id);
         this.name = name;
         this.description = description;

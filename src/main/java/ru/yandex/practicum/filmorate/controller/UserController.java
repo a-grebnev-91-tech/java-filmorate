@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.IllegalIdException;
-import ru.yandex.practicum.filmorate.model.UserEntry;
+import ru.yandex.practicum.filmorate.model.UserData;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -15,10 +15,10 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
     private long id = 1;
-    private final Map<Long, UserEntry> users = new HashMap<>();
+    private final Map<Long, UserData> users = new HashMap<>();
 
     @PostMapping
-    public UserEntry create(@RequestBody @Valid UserEntry user) {
+    public UserData create(@RequestBody @Valid UserData user) {
         if (user.getId() != 0) {
             log.warn("Attempt to create user with assigned id");
             throw new IllegalIdException("Cannot create user with assigned id");
@@ -34,12 +34,12 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<UserEntry> findAll() {
+    public Collection<UserData> findAll() {
         return users.values();
     }
 
     @PutMapping
-    public UserEntry update(@RequestBody @Valid UserEntry user) {
+    public UserData update(@RequestBody @Valid UserData user) {
         long id = user.getId();
         if (users.containsKey(id)) {
             log.info("Update user {}", user);

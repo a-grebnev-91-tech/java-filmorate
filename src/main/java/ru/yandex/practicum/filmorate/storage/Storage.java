@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.BaseEntry;
+import ru.yandex.practicum.filmorate.model.BaseData;
 
 import java.util.Collection;
 
 @Component
-public interface Storage<T extends BaseEntry> {
+public interface Storage<T extends BaseData> {
     T create(T baseEntity);
     T delete(long id);
     T get(long id);

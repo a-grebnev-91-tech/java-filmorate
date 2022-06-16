@@ -2,28 +2,28 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.FilmRatingEntry;
+import ru.yandex.practicum.filmorate.model.FilmsRatingData;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class FilmRatingService extends BaseService<FilmRatingEntry> {
-    public static final Comparator<FilmRatingEntry> FILM_RATING_DESC_COMPARATOR =
-            Comparator.comparing(FilmRatingEntry::rating).reversed();
-    private final TreeSet<FilmRatingEntry> sortedRatings;
+public class FilmRatingService extends BaseService<FilmsRatingData> {
+    public static final Comparator<FilmsRatingData> FILM_RATING_DESC_COMPARATOR =
+            Comparator.comparing(FilmsRatingData::rating).reversed();
+    private final TreeSet<FilmsRatingData> sortedRatings;
 
     @Autowired
-    public FilmRatingService(Storage<FilmRatingEntry> storage) {
+    public FilmRatingService(Storage<FilmsRatingData> storage) {
         super(storage);
-        this.sortedRatings = new TreeSet<>(FILM_RATING_DESC_COMPARATOR.thenComparing(FilmRatingEntry::getFilmId));
+        this.sortedRatings = new TreeSet<>(FILM_RATING_DESC_COMPARATOR.thenComparing(FilmsRatingData::getFilmId));
     }
 
     public void addLike(final long filmId, final long userId) {
-        FilmRatingEntry filmRating = get(filmId);
+        FilmsRatingData filmRating = get(filmId);
         if (filmRating == null){
-            filmRating = new FilmRatingEntry(filmId);
+            filmRating = new FilmsRatingData(filmId);
         }
         filmRating.addLike(userId);
         create(filmRating);
@@ -31,25 +31,25 @@ public class FilmRatingService extends BaseService<FilmRatingEntry> {
     }
 
     @Override
-    public FilmRatingEntry delete(final long id) {
-        FilmRatingEntry entry = super.delete(id);
+    public FilmsRatingData delete(final long id) {
+        FilmsRatingData entry = super.delete(id);
         sortedRatings.remove(entry);
         return entry;
     }
 
     //TODO double check this
     public List<Long> getTop(final int count) {
-        List<FilmRatingEntry> top;
+        List<FilmsRatingData> top;
         if (count > sortedRatings.size()) {
             top = new ArrayList<>(sortedRatings);
         } else {
             top = sortedRatings.stream().limit(count).collect(Collectors.toList());
         }
-        return top.stream().map(FilmRatingEntry::getFilmId).collect(Collectors.toList());
+        return top.stream().map(FilmsRatingData::getFilmId).collect(Collectors.toList());
     }
 
     public void removeLike(final long filmId, final long userId) {
-        FilmRatingEntry filmRating = get(filmId);
+        FilmsRatingData filmRating = get(filmId);
         sortedRatings.remove(filmRating);
         filmRating.removeLike(userId);
         if (filmRating.rating() != 0) {
@@ -58,8 +58,8 @@ public class FilmRatingService extends BaseService<FilmRatingEntry> {
     }
 
     @Override
-    public FilmRatingEntry update(FilmRatingEntry entry) {
-        FilmRatingEntry oldEntry = get(entry.getFilmId());
+    public FilmsRatingData update(FilmsRatingData entry) {
+        FilmsRatingData oldEntry = get(entry.getFilmId());
         entry = super.update(entry);
         sortedRatings.remove(oldEntry);
         sortedRatings.add(entry);

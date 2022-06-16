@@ -3,10 +3,10 @@ package ru.yandex.practicum.filmorate.model;
 import java.util.HashSet;
 import java.util.Set;
 
-public class UsersFriendsEntry extends BaseEntry{
+public class UsersFriendsData extends BaseData {
     private final Set<Long> friends;
 
-    public UsersFriendsEntry(final long userId) {
+    public UsersFriendsData(final long userId) {
         super(userId);
         friends = new HashSet<>();
     }

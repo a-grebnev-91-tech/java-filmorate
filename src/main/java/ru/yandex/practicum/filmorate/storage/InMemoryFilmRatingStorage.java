@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.exception.EntryAlreadyExistException;
-import ru.yandex.practicum.filmorate.model.FilmRatingEntry;
+import ru.yandex.practicum.filmorate.model.FilmsRatingData;
 
-public class InMemoryFilmRatingStorage<T extends FilmRatingEntry> extends InMemoryStorage<T> {
+public class InMemoryFilmRatingStorage<T extends FilmsRatingData> extends InMemoryStorage<T> {
 
     @Override
     public T create(T entry) {
