@@ -2,13 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import java.util.Objects;
 
-public abstract class BaseEntity {
+public abstract class BaseEntry {
     private long id;
 
-    public BaseEntity() {
+    public BaseEntry() {
     }
 
-    public BaseEntity(long id) {
+    public BaseEntry(long id) {
         this.id = id;
     }
 
@@ -24,7 +24,7 @@ public abstract class BaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BaseEntity that = (BaseEntity) o;
+        BaseEntry that = (BaseEntry) o;
         return id == that.id;
     }
 

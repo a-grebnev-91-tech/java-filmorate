@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmEntry;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -27,37 +27,37 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@RequestBody @Valid Film film) {
-        Film createdFilm = service.create(film);
+    public FilmEntry create(@RequestBody @Valid FilmEntry film) {
+        FilmEntry createdFilm = service.create(film);
         log.info("Create film {}", createdFilm);
         return createdFilm;
     }
 
     @DeleteMapping("/{id}")
-    public Film delete(@PathVariable final long id) {
-        Film deletedFilm = service.delete(id);
+    public FilmEntry delete(@PathVariable final long id) {
+        FilmEntry deletedFilm = service.delete(id);
         log.info("Delete film {}", deletedFilm);
         return deletedFilm;
     }
 
     @GetMapping
-    public Collection<Film> findAll() {
-        Collection<Film> films = service.getAll();
+    public Collection<FilmEntry> findAll() {
+        Collection<FilmEntry> films = service.getAll();
         log.info("Get all films");
         return  films;
     }
 
     @GetMapping("/{id}")
-    public Film get(@PathVariable final long id){
-        Film readFilm = service.get(id);
+    public FilmEntry get(@PathVariable final long id){
+        FilmEntry readFilm = service.get(id);
         log.info("Get {}", readFilm);
         return readFilm;
     }
 
     //todo check if spring can parse string to int
     @GetMapping("/popular")
-    public List<Film> getTop(@RequestParam(defaultValue = "10") final int count) {
-        List<Film> top = service.getTopFilms(count);
+    public List<FilmEntry> getTop(@RequestParam(defaultValue = "10") final int count) {
+        List<FilmEntry> top = service.getTopFilms(count);
         log.info("Get top " + count + " films");
         return top;
     }
@@ -69,8 +69,8 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@RequestBody @Valid Film film) {
-        Film updatedFilm = service.update(film);
+    public FilmEntry update(@RequestBody @Valid FilmEntry film) {
+        FilmEntry updatedFilm = service.update(film);
         log.info("Update {}", updatedFilm);
         return updatedFilm;
     }

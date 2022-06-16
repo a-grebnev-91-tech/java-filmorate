@@ -3,12 +3,12 @@ package ru.yandex.practicum.filmorate.storage;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IllegalIdException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.BaseEntity;
+import ru.yandex.practicum.filmorate.model.BaseEntry;
 
 import java.util.*;
 
 @Component
-public class InMemoryStorage<T extends BaseEntity> implements Storage<T> {
+public class InMemoryStorage<T extends BaseEntry> implements Storage<T> {
     private long id;
     final Map<Long, T> storage;
 

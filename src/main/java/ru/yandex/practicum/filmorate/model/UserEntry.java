@@ -6,7 +6,7 @@ import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.*;
 
-public class User extends BaseEntity{
+public class UserEntry extends BaseEntry {
     @Getter
     @Setter
     @Past
@@ -24,11 +24,11 @@ public class User extends BaseEntity{
     @Getter
     private String name;
 
-    public User() {
+    public UserEntry() {
         friends = new HashSet<>();
     }
 
-    public User(long id, String email, String login, String name, LocalDate birthday) {
+    public UserEntry(long id, String email, String login, String name, LocalDate birthday) {
         super(id);
         this.birthday = birthday;
         this.email = email;

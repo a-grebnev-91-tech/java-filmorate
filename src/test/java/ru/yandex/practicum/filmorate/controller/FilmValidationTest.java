@@ -5,7 +5,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmEntry;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -31,27 +31,27 @@ class FilmValidationTest {
 
     @MethodSource("test1MethodSource")
     @ParameterizedTest(name = "{index}. Check valid film with {1}")
-    void test1_shouldCreateValidFilm(Film film, String testDescription) {
-        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+    void test1_shouldCreateValidFilm(FilmEntry film, String testDescription) {
+        Set<ConstraintViolation<FilmEntry>> violations = validator.validate(film);
         assertTrue(violations.isEmpty());
     }
 
     Stream<Arguments> test1MethodSource() {
-        Film simpleValidFilm = getValidFilm();
+        FilmEntry simpleValidFilm = getValidFilm();
 
-        Film filmWithoutDescription = getValidFilm();
+        FilmEntry filmWithoutDescription = getValidFilm();
         filmWithoutDescription.setDescription(null);
 
-        Film filmWith200CharsDescriptionLength = getValidFilm();
+        FilmEntry filmWith200CharsDescriptionLength = getValidFilm();
         filmWith200CharsDescriptionLength.setDescription(getDescriptionByLength(200));
 
-        Film filmWithReleaseDateInFuture = getValidFilm();
+        FilmEntry filmWithReleaseDateInFuture = getValidFilm();
         filmWithReleaseDateInFuture.setReleaseDate(LocalDate.now().plusYears(100));
 
-        Film filmWithReleaseDateOnBirthdayOfCinema = getValidFilm();
+        FilmEntry filmWithReleaseDateOnBirthdayOfCinema = getValidFilm();
         filmWithReleaseDateOnBirthdayOfCinema.setReleaseDate(LocalDate.of(1895, 12, 28));
 
-        Film filmWithReleaseDateIsNull = getValidFilm();
+        FilmEntry filmWithReleaseDateIsNull = getValidFilm();
         filmWithReleaseDateIsNull.setReleaseDate(null);
 
         return Stream.of(
@@ -66,26 +66,26 @@ class FilmValidationTest {
 
     @MethodSource("test2MethodSource")
     @ParameterizedTest(name = "{index}. Check invalid film with {1}")
-    void test2_shouldFailValidationInvalidMovie(Film film, String testResultDescription) {
-        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+    void test2_shouldFailValidationInvalidMovie(FilmEntry film, String testResultDescription) {
+        Set<ConstraintViolation<FilmEntry>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
         assertEquals(film, violations.iterator().next().getRootBean());
     }
 
     Stream<Arguments> test2MethodSource() {
-        Film invalidName = getValidFilm();
+        FilmEntry invalidName = getValidFilm();
         invalidName.setName("");
 
-        Film invalidDescription = getValidFilm();
+        FilmEntry invalidDescription = getValidFilm();
         invalidDescription.setDescription(getDescriptionByLength(201));
 
-        Film invalidReleaseDate = getValidFilm();
+        FilmEntry invalidReleaseDate = getValidFilm();
         invalidReleaseDate.setReleaseDate(LocalDate.of(1895, 12, 27));
 
-        Film durationIsZero = getValidFilm();
+        FilmEntry durationIsZero = getValidFilm();
         durationIsZero.setDuration(0);
 
-        Film negativeDuration = getValidFilm();
+        FilmEntry negativeDuration = getValidFilm();
         negativeDuration.setDuration(-100);
 
         return Stream.of(
@@ -101,8 +101,8 @@ class FilmValidationTest {
         return "s".repeat(length);
     }
 
-    private Film getValidFilm() {
-        return new Film(
+    private FilmEntry getValidFilm() {
+        return new FilmEntry(
                 0,
                 "Java Virtual ExMachine",
                 "Epic movie about java compiler",

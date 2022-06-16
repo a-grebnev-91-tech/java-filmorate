@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
-public class FilmRatingEntry extends BaseEntity {
+public class FilmRatingEntry extends BaseEntry {
     private final Set<Long> likes;
 
     public FilmRatingEntry(final long filmId) {

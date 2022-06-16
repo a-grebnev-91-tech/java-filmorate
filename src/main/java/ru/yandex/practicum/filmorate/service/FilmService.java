@@ -3,19 +3,19 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmEntry;
 import ru.yandex.practicum.filmorate.model.FilmRatingEntry;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
 import java.util.*;
 
 @Service
-public class FilmService extends BaseService<Film> {
+public class FilmService extends BaseService<FilmEntry> {
     private final FilmRatingService ratingService;
     private final UserService userService;
 
     @Autowired
-    public FilmService(Storage<Film> storage, FilmRatingService ratingService, UserService userService) {
+    public FilmService(Storage<FilmEntry> storage, FilmRatingService ratingService, UserService userService) {
         super(storage);
         this.ratingService = ratingService;
         this.userService = userService;
@@ -33,20 +33,20 @@ public class FilmService extends BaseService<Film> {
     }
 
     @Override
-    public Film create(final Film film) {
-        Film created = super.create(film);
+    public FilmEntry create(final FilmEntry film) {
+        FilmEntry created = super.create(film);
         ratingService.create(getRatingEntry(film));
         return created;
     }
 
     @Override
-    public Film delete(final long id) {
-        Film deleted = super.delete(id);
+    public FilmEntry delete(final long id) {
+        FilmEntry deleted = super.delete(id);
         ratingService.delete(deleted.getId());
         return deleted;
     }
 
-    public List<Film> getTopFilms(final int count) {
+    public List<FilmEntry> getTopFilms(final int count) {
         List<Long> topIds = ratingService.getTop(count);
         return getSome(topIds);
     }
@@ -64,7 +64,7 @@ public class FilmService extends BaseService<Film> {
         return userService.isEntityExist(userId);
     }
 
-    private FilmRatingEntry getRatingEntry(Film film) {
+    private FilmRatingEntry getRatingEntry(FilmEntry film) {
         return new FilmRatingEntry(film.getId());
     }
 }
