@@ -12,43 +12,66 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/films")
-public class FilmController extends BaseController<Film> {
+public class FilmController {
+    private final FilmService service;
 
     @Autowired
     public FilmController(FilmService service) {
-        super(service);
+        this.service = service;
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable("id") final long filmId, @PathVariable final long userId) {
+        service.addLike(filmId, userId);
+        log.info("Added like to film with id = " + filmId + " by user with id =" + userId);
     }
 
     @PostMapping
-    @Override
     public Film create(@RequestBody @Valid Film film) {
-        return super.create(film);
+        Film createdFilm = service.create(film);
+        log.info("Create film {}", createdFilm);
+        return createdFilm;
     }
 
     @DeleteMapping("/{id}")
-    @Override
     public Film delete(@PathVariable final long id) {
-        return super.delete(id);
+        Film deletedFilm = service.delete(id);
+        log.info("Delete film {}", deletedFilm);
+        return deletedFilm;
     }
 
-
     @GetMapping
-    @Override
     public Collection<Film> findAll() {
-        Collection<Film> films = super.findAll();
+        Collection<Film> films = service.getAll();
         log.info("Get all films");
         return  films;
     }
 
     @GetMapping("/{id}")
-    @Override
     public Film get(@PathVariable final long id){
-        return super.get(id);
+        Film readFilm = service.get(id);
+        log.info("Get {}", readFilm);
+        return readFilm;
+    }
+
+    //todo check if spring can parse string to int
+    @GetMapping("/popular")
+    public List<Film> getTop(@RequestParam(defaultValue = "10") final int count) {
+        List<Film> top = service.getTopFilms(count);
+        log.info("Get top " + count + " films");
+        return top;
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable("id") final long filmId, @PathVariable final long userId) {
+        service.removeLike(filmId, userId);
+        log.info("Like has been removed from film with id = " + filmId + " by user with id = " + userId);
     }
 
     @PutMapping
-    @Override
     public Film update(@RequestBody @Valid Film film) {
-        return super.update(film);
+        Film updatedFilm = service.update(film);
+        log.info("Update {}", updatedFilm);
+        return updatedFilm;
     }
 }
