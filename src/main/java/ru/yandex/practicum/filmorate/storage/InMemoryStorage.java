@@ -10,10 +10,10 @@ import java.util.*;
 @Component
 public class InMemoryStorage<T extends BaseEntity> implements Storage<T> {
     private long id;
-    private final Map<Long, T> vault;
+    protected final Map<Long, T> storage;
 
     public InMemoryStorage() {
-        this.vault = new HashMap<>();
+        this.storage = new HashMap<>();
         this.id = 1;
     }
 
@@ -24,31 +24,31 @@ public class InMemoryStorage<T extends BaseEntity> implements Storage<T> {
         }
         long currentId = generateId();
         baseEntity.setId(currentId);
-        vault.put(currentId, baseEntity);
+        storage.put(currentId, baseEntity);
         return baseEntity;
     }
 
     @Override
     public T delete(final long id) {
-        T baseEntity = vault.remove(id);
+        T baseEntity = storage.remove(id);
         if (baseEntity == null) {
-            throw new NotFoundException("Entity with id " + id + " isn't exist.");
+            throw new NotFoundException("Entry with id " + id + " isn't exist.");
         }
         return baseEntity;
     }
 
     @Override
     public T get(final long id) {
-        T baseEntity = vault.get(id);
+        T baseEntity = storage.get(id);
         if (baseEntity == null) {
-            throw new NotFoundException("Entity with id " + id + " isn't exist.");
+            throw new NotFoundException("Entry with id " + id + " isn't exist.");
         }
         return baseEntity;
     }
 
     @Override
     public Collection<T> getAll() {
-        return vault.values();
+        return storage.values();
     }
 
     @Override
@@ -62,17 +62,17 @@ public class InMemoryStorage<T extends BaseEntity> implements Storage<T> {
 
     @Override
     public boolean isExist(final long id) {
-        return vault.containsKey(id);
+        return storage.containsKey(id);
     }
 
     @Override
     public T update(final T baseEntity) {
         long id = baseEntity.getId();
-        if (vault.containsKey(id)) {
-            vault.put(id, baseEntity);
+        if (storage.containsKey(id)) {
+            storage.put(id, baseEntity);
             return baseEntity;
         } else {
-            throw new IllegalIdException("Entity with id  " + id + " isn't exist.");
+            throw new IllegalIdException("Entry with id  " + id + " isn't exist.");
         }
     }
 

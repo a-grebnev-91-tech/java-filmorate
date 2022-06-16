@@ -10,14 +10,14 @@ import java.util.*;
 
 @Service
 public class FilmService extends BaseService<Film> {
-    private final LikeRankedFilm likeRankedFilms;
+    private final FilmRatingService likeRankedFilms;
     private final UserService userService;
 
     @Autowired
     public FilmService(Storage<Film> storage, UserService userService) {
         super(storage);
         this.userService = userService;
-        this.likeRankedFilms = new LikeRankedFilm(storage.getAll());
+        this.likeRankedFilms = new FilmRatingService(storage.getAll());
     }
 
     //TODO check
