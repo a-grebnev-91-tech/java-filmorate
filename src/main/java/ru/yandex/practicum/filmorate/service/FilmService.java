@@ -5,20 +5,19 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.IllegalIdException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.Storage;
-import ru.yandex.practicum.filmorate.storage.film.LikeRankedFilmStorage;
 
 import java.util.*;
 
 @Service
 public class FilmService extends BaseService<Film> {
-    private final LikeRankedFilmStorage likeRankedFilms;
+    private final LikeRankedFilm likeRankedFilms;
     private final UserService userService;
 
     @Autowired
     public FilmService(Storage<Film> storage, UserService userService) {
         super(storage);
         this.userService = userService;
-        this.likeRankedFilms = new LikeRankedFilmStorage(storage.getAll());
+        this.likeRankedFilms = new LikeRankedFilm(storage.getAll());
     }
 
     //TODO check
@@ -41,7 +40,8 @@ public class FilmService extends BaseService<Film> {
     }
 
     public List<Film> getTopFilms(final int count) {
-        return likeRankedFilms.getTopFilms(count);
+        List<Long> topIds = likeRankedFilms.getTop(count);
+        return getSome(topIds);
     }
 
     //todo check

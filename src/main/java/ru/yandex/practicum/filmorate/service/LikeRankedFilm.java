@@ -1,14 +1,14 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.service;
 
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class LikeRankedFilmStorage {
-    private final Map<Integer, Map<Long, Film>> films;
+public class LikeRankedFilm {
+    private final Map<Integer, Map<Long, Set<Long>>> films;
 
-    public LikeRankedFilmStorage(Collection<Film> films) {
+    public LikeRankedFilm(Collection<Film> films) {
         this.films = new HashMap<>();
         for (Film film : films) {
             add(film);
@@ -16,24 +16,26 @@ public class LikeRankedFilmStorage {
     }
 
     public void add(final Film film) {
-        int filmRating = film.rating();
-        if (films.containsKey(filmRating)) {
-            films.get(filmRating).put(film.getId(), film);
+        long id = film.getId();
+        int rating = film.rating();
+        Set<Long> likes = Set.copyOf(film.getLikes());
+        if (films.containsKey(rating)) {
+            films.get(rating).put(id, likes);
         } else {
-            Map<Long, Film> films = new HashMap<>();
-            films.put(film.getId(), film);
-            this.films.put(filmRating, films);
+            Map<Long, Set<Long>> oneFilm = new HashMap<>();
+            oneFilm.put(id, likes);
+            this.films.put(rating, oneFilm);
         }
     }
 
     //TODO double check this
-    public List<Film> getTopFilms(final int count) {
-        List<Film> result = new ArrayList<>();
+    public List<Long> getTop(final int count) {
+        List<Long> result = new ArrayList<>();
         List<Integer> ratings = getAllRatings();
         for (int i = 0; result.size() < count; i++) {
-            Map<Long, Film> filmsWithSameRating = films.get(ratings.get(i));
-            for (Map.Entry<Long, Film> film : filmsWithSameRating.entrySet()) {
-                result.add(film.getValue());
+            Map<Long, Set<Long>> filmsWithSameRating = films.get(ratings.get(i));
+            for (Long id : filmsWithSameRating.keySet()) {
+                result.add(id);
                 if (result.size() == count)
                     break;
             }
@@ -51,7 +53,7 @@ public class LikeRankedFilmStorage {
     }
 
     public void update(final Film newVersion, final int oldRating) {
-        Map<Long, Film> filmsWithSameRating = films.get(oldRating);
+        Map<Long, Set<Long>> filmsWithSameRating = films.get(oldRating);
         filmsWithSameRating.remove(newVersion.getId());
         add(newVersion);
     }
