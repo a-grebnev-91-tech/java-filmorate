@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.FilmsRatingData;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmsRatingStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
 import java.util.*;
@@ -15,12 +16,13 @@ public class FilmRatingService extends BaseService<FilmsRatingData> {
     private final TreeSet<FilmsRatingData> sortedRatings;
 
     @Autowired
-    public FilmRatingService(Storage<FilmsRatingData> storage) {
+    public FilmRatingService(InMemoryFilmsRatingStorage storage) {
         super(storage);
         this.sortedRatings = new TreeSet<>(FILM_RATING_DESC_COMPARATOR.thenComparing(FilmsRatingData::getFilmId));
     }
 
     public void addLike(final long filmId, final long userId) {
+        //TODO check and if it's NotFoundException change to try-catch
         FilmsRatingData filmRating = get(filmId);
         if (filmRating == null){
             filmRating = new FilmsRatingData(filmId);
