@@ -10,7 +10,7 @@ import java.util.*;
 @Component
 public class InMemoryStorage<T extends BaseEntity> implements Storage<T> {
     private long id;
-    protected final Map<Long, T> storage;
+    final Map<Long, T> storage;
 
     public InMemoryStorage() {
         this.storage = new HashMap<>();

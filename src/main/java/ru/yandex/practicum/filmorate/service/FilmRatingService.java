@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmRatingEntry;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
@@ -53,9 +52,7 @@ public class FilmRatingService extends BaseService<FilmRatingEntry> {
         FilmRatingEntry filmRating = get(filmId);
         sortedRatings.remove(filmRating);
         filmRating.removeLike(userId);
-        if (filmRating.rating() == 0) {
-            delete(filmId);
-        } else {
+        if (filmRating.rating() != 0) {
             sortedRatings.add(filmRating);
         }
     }
