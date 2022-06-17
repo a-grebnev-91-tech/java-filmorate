@@ -42,7 +42,7 @@ public class UserController {
         return created;
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public User delete(@PathVariable final long id) {
         User deletedUser = service.deleteUser(id);
         log.info("Delete film {}", deletedUser);

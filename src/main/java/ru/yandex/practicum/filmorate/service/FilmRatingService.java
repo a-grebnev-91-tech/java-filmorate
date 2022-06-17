@@ -47,7 +47,6 @@ public class FilmRatingService {
         sortedRatings.remove(deletedEntry);
     }
 
-    //TODO double check this
     public List<Long> getTop(final int count) {
         List<FilmsRating> top;
         if (count > sortedRatings.size()) {
@@ -70,12 +69,4 @@ public class FilmRatingService {
             storage.update(entry);
         }
     }
-//TODO delete
-//    private FilmsRating update(FilmsRating entry) {
-//        FilmsRating oldEntry = storage.get(entry.getFilmId());
-//        entry = storage.update(entry);
-//        sortedRatings.remove(oldEntry);
-//        sortedRatings.add(entry);
-//        return entry;
-//    }
 }

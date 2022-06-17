@@ -21,7 +21,6 @@ public class FilmService {
         this.userService = userService;
     }
 
-    //TODO check
     public void addLike(final long filmId, final long userId) {
         if (isUserExist(userId) && isFilmExist(filmId)) {
             ratingService.addLike(filmId, userId);
@@ -57,7 +56,6 @@ public class FilmService {
         return new ArrayList<>(filmsStorage.getSome(topIds));
     }
 
-    //todo check
     public void removeLike(final long filmId, final long userId) {
         ratingService.removeLike(filmId, userId);
     }

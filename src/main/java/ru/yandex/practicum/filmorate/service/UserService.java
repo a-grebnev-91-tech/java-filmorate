@@ -46,14 +46,12 @@ public class UserService {
     public List<User> getAllUsers() {
         return new ArrayList<>(usersStorage.getAll());
     }
-    //todo check
 
     public List<User> getFriends(final long id) {
         Set<Long> friendsIds = friendsService.getFriends(id);
         return new ArrayList<>(usersStorage.getSome(friendsIds));
     }
 
-    //TODO check
     public List<User> getMutualFriends(final long userId, final long anotherUserId) {
         return new ArrayList<>(usersStorage.getSome(friendsService.getMutualFriends(userId, anotherUserId)));
     }

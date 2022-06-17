@@ -54,7 +54,6 @@ public class FilmController {
         return readFilm;
     }
 
-    //todo check if spring can parse string to int
     @GetMapping("/popular")
     public List<Film> getTop(@RequestParam(defaultValue = "10") final int count) {
         List<Film> top = service.getTopFilms(count);

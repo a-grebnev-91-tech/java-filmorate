@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.DataAttributes;
 
 import java.util.Set;
 
-public class UsersFriends extends DataAttributes<Long> implements Cloneable {
+public class UsersFriends extends DataAttributes<Long> {
 
     public UsersFriends(long userId) {
         super(userId);
@@ -32,14 +32,5 @@ public class UsersFriends extends DataAttributes<Long> implements Cloneable {
 
     public boolean removeFriend(final long friendId) {
         return super.removeAttribute(friendId);
-    }
-
-    @Override
-    public UsersFriends clone() {
-        UsersFriends friends = new UsersFriends(this.getUserId());
-        for (Long friendId : getFriends()) {
-            friends.addFriend(friendId);
-        }
-        return friends;
     }
 }

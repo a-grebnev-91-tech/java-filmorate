@@ -4,7 +4,6 @@ import ru.yandex.practicum.filmorate.model.DataAttributes;
 
 import java.util.Collection;
 
-//TODO check raw use generic
 //вопрос к ревьюеру: идея ругается на использование чистого DataAttributes без спецификатора типа.
 // Нормально ли такое использование?
 public interface DataAttributesStorage<T extends DataAttributes> {

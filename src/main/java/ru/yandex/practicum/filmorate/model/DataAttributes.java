@@ -12,7 +12,6 @@ public abstract class DataAttributes<T> {
         attributes = new HashSet<>();
     }
 
-    //TODO check why is always inverted
     public boolean addAttribute(final T attribute) {
         return attributes.add(attribute);
     }
