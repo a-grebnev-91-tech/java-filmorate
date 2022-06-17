@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.film.FilmsRating;
 import ru.yandex.practicum.filmorate.storage.DataAttributesStorage;
 
@@ -22,14 +23,16 @@ public class FilmRatingService {
     }
 
     public void addLike(final long filmId, final long userId) {
-        //TODO check and if it's NotFoundException change to try-catch
-        FilmsRating entry = storage.get(filmId);
-        if (entry == null) {
+        FilmsRating entry;
+        try {
+            entry = storage.get(filmId);
+            sortedRatings.remove(entry);
+            entry.addLike(userId);
+            storage.update(entry);
+        } catch (NotFoundException ex) {
             entry = new FilmsRating(filmId);
             entry.addLike(userId);
             storage.create(entry);
-        } else {
-            storage.update(entry);
         }
         sortedRatings.add(entry);
     }
@@ -58,9 +61,14 @@ public class FilmRatingService {
     public void removeLike(final long filmId, final long userId) {
         FilmsRating entry = storage.get(filmId);
         sortedRatings.remove(entry);
-        entry.removeLike(userId);
-        sortedRatings.add(entry);
-        storage.update(entry);
+        try {
+            entry.removeLike(userId);
+        } catch (NotFoundException ex) {
+            throw ex;
+        } finally {
+            sortedRatings.add(entry);
+            storage.update(entry);
+        }
     }
 //TODO delete
 //    private FilmsRating update(FilmsRating entry) {

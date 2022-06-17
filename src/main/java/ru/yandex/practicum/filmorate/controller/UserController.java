@@ -80,6 +80,15 @@ public class UserController {
         return friends;
     }
 
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriendship(
+            @PathVariable("id") final long userId,
+            @PathVariable("friendId") final long anotherUserId
+    ) {
+        service.removeFriendship(userId, anotherUserId);
+        log.info("Friendship between users with ids " + userId + " and " + anotherUserId + " has been removed");
+    }
+
     @PutMapping
     public User update(@RequestBody @Valid User user) {
         User updatedUser = service.updateUser(user);

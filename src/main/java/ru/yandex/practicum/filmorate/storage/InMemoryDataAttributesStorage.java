@@ -5,8 +5,7 @@ import ru.yandex.practicum.filmorate.exception.EntryAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.IllegalIdException;
 import ru.yandex.practicum.filmorate.model.DataAttributes;
 
-@Component
-public class InMemoryDataAttributesStorage<T extends DataAttributes>
+public abstract class InMemoryDataAttributesStorage<T extends DataAttributes>
         extends InMemoryStorage<T>
         implements DataAttributesStorage<T> {
 

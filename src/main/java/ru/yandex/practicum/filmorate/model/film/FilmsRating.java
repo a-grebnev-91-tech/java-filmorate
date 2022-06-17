@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model.film;
 
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.DataAttributes;
 
 import java.util.Set;
@@ -30,7 +31,11 @@ public class FilmsRating extends DataAttributes<Long> {
         return super.isAttributePresent(userId);
     }
 
-    public boolean removeLike(long attribute) {
-        return super.removeAttribute(attribute);
+    public boolean removeLike(long userId) {
+        if (isLiked(userId)) {
+            return super.removeAttribute(userId);
+        } else {
+            throw new NotFoundException("User with id " + userId + " doesn't liked film with id " + getFilmId());
+        }
     }
 }

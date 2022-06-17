@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class DataAttributes<T> {
-
     private final Long dataId;
     private final Set<T> attributes;
 

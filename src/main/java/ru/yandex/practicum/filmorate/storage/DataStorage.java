@@ -5,7 +5,6 @@ import ru.yandex.practicum.filmorate.model.BaseData;
 
 import java.util.Collection;
 
-@Component
 public interface DataStorage<T extends BaseData> {
     T create(T baseEntity);
     T delete(long id);

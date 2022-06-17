@@ -2,17 +2,16 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.IllegalIdException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.BaseData;
 
 import java.util.*;
 
-@Component
-public class InMemoryDataStorage<T extends BaseData> extends InMemoryStorage<T> implements DataStorage<T> {
+public abstract class InMemoryDataStorage<T extends BaseData> extends InMemoryStorage<T> implements DataStorage<T> {
     private long id;
-    final Map<Long, T> storage;
 
     public InMemoryDataStorage() {
-        this.storage = new HashMap<>();
+        super();
         this.id = 1;
     }
 
@@ -23,18 +22,18 @@ public class InMemoryDataStorage<T extends BaseData> extends InMemoryStorage<T> 
         }
         long currentId = generateId();
         data.setId(currentId);
-        storage.put(currentId, data);
+        super.storage.put(currentId, data);
         return data;
     }
 
     @Override
     public T update(final T baseEntity) {
         long id = baseEntity.getId();
-        if (storage.containsKey(id)) {
-            storage.put(id, baseEntity);
+        if (super.storage.containsKey(id)) {
+            super.storage.put(id, baseEntity);
             return baseEntity;
         } else {
-            throw new IllegalIdException("Entry with id  " + id + " isn't exist.");
+            throw new NotFoundException("Entry with id  " + id + " isn't exist.");
         }
     }
 
