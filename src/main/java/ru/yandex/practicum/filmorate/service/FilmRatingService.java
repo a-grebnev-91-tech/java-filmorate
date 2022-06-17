@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.FilmsRating;
+import ru.yandex.practicum.filmorate.model.film.FilmsRating;
 import ru.yandex.practicum.filmorate.storage.DataAttributesStorage;
 
 import java.util.*;

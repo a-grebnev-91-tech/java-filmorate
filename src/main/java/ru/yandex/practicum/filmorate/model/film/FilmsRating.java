@@ -1,4 +1,6 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model.film;
+
+import ru.yandex.practicum.filmorate.model.DataAttributes;
 
 import java.util.Set;
 

@@ -1,11 +1,12 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model.user;
 
 import lombok.*;
+import ru.yandex.practicum.filmorate.model.BaseData;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 
-public class User extends Data {
+public class User extends BaseData {
     @Getter
     @Setter
     @Past
