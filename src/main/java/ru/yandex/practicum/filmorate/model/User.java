@@ -4,9 +4,8 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.*;
 
-public class UserData extends BaseData {
+public class User extends Data {
     @Getter
     @Setter
     @Past
@@ -16,7 +15,6 @@ public class UserData extends BaseData {
     @NotBlank
     @Email(message = "Email should be valid")
     private String email;
-    private final Set<Long> friends;
     @Getter
     @NotNull
     @Pattern(regexp = "\\S+")
@@ -24,25 +22,14 @@ public class UserData extends BaseData {
     @Getter
     private String name;
 
-    public UserData() {
-        friends = new HashSet<>();
-    }
+    public User() {}
 
-    public UserData(long id, String email, String login, String name, LocalDate birthday) {
+    public User(long id, String email, String login, String name, LocalDate birthday) {
         super(id);
         this.birthday = birthday;
         this.email = email;
         this.login = login;
         this.name = name == null || name.isBlank() ? login : name;
-        friends = new HashSet<>();
-    }
-
-    public void addFriend(final long friendId) {
-        friends.add(friendId);
-    }
-
-    public Set<Long> friends() {
-        return Set.copyOf(friends);
     }
 
     public void setLogin(String login) {
@@ -56,10 +43,6 @@ public class UserData extends BaseData {
             this.name = this.login;
         else
             this.name = name;
-    }
-
-    public void removeFriend(final long friendId) {
-        friends.remove(friendId);
     }
 
     @Override

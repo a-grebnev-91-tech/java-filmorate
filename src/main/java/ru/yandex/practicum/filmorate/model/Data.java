@@ -2,13 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import java.util.Objects;
 
-public abstract class BaseData {
+public abstract class Data {
     private long id;
 
-    public BaseData() {
+    public Data() {
     }
 
-    public BaseData(long id) {
+    public Data(long id) {
         this.id = id;
     }
 
@@ -24,7 +24,7 @@ public abstract class BaseData {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BaseData that = (BaseData) o;
+        Data that = (Data) o;
         return id == that.id;
     }
 

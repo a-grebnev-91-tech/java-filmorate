@@ -6,7 +6,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import ru.yandex.practicum.filmorate.model.UserData;
+import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -31,18 +31,18 @@ public class UserValidationTest {
 
     @MethodSource("test1MethodSource")
     @ParameterizedTest(name = "{index}. Check valid user with {1}")
-    void test1_shouldCreateValidUser(UserData user, String testDescription) {
-        Set<ConstraintViolation<UserData>> violations = validator.validate(user);
+    void test1_shouldCreateValidUser(User user, String testDescription) {
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertTrue(violations.isEmpty());
     }
 
     Stream<Arguments> test1MethodSource() {
-        UserData simpleValidUser = getValidUser();
+        User simpleValidUser = getValidUser();
 
-        UserData userThatWasBornYesterday = getValidUser();
+        User userThatWasBornYesterday = getValidUser();
         userThatWasBornYesterday.setBirthday(LocalDate.now().minusDays(1));
 
-        UserData nullBirthday = getValidUser();
+        User nullBirthday = getValidUser();
         nullBirthday.setBirthday(null);
 
         return Stream.of(
@@ -54,35 +54,35 @@ public class UserValidationTest {
 
     @MethodSource("test2MethodSource")
     @ParameterizedTest(name = "{index}. Check invalid user with {1}")
-    void test2_shouldFailValidationInvalidUser(UserData user, String testResultDescription) {
-        Set<ConstraintViolation<UserData>> violations = validator.validate(user);
+    void test2_shouldFailValidationInvalidUser(User user, String testResultDescription) {
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());
         assertEquals(user, violations.iterator().next().getRootBean());
     }
 
     Stream<Arguments> test2MethodSource() {
-        UserData LoginWithSpace = getValidUser();
+        User LoginWithSpace = getValidUser();
         LoginWithSpace.setLogin("user puser");
 
-        UserData nullLogin = getValidUser();
+        User nullLogin = getValidUser();
         nullLogin.setLogin(null);
 
-        UserData blankLogin = getValidUser();
+        User blankLogin = getValidUser();
         blankLogin.setLogin(" ");
 
-        UserData failEmail = getValidUser();
+        User failEmail = getValidUser();
         failEmail.setEmail("email");
 
-        UserData nullEmail = getValidUser();
+        User nullEmail = getValidUser();
         nullEmail.setEmail(null);
 
-        UserData emptyEmail = getValidUser();
+        User emptyEmail = getValidUser();
         emptyEmail.setEmail("");
 
-        UserData blankEmail = getValidUser();
+        User blankEmail = getValidUser();
         blankEmail.setEmail(" ");
 
-        UserData futureBirthday = getValidUser();
+        User futureBirthday = getValidUser();
         futureBirthday.setBirthday(LocalDate.now().plusDays(1));
 
         return Stream.of(
@@ -101,7 +101,7 @@ public class UserValidationTest {
     public void test3_shouldSetUserNameByLogin() {
         String login = "login";
         String name = null;
-        UserData user = new UserData(
+        User user = new User(
                 0,
                 "email@email.em",
                 login,
@@ -113,7 +113,7 @@ public class UserValidationTest {
         assertEquals("name", user.getName(), "Name changing fail");
         user.setName(name);
         assertEquals(login, user.getName(), "Name changing fail");
-        UserData user1 = new UserData();
+        User user1 = new User();
         user1.setLogin("login");
         assertEquals(login, user1.getName(), "Name setup through setter fail");
         user1.setName("");
@@ -124,8 +124,8 @@ public class UserValidationTest {
     }
 
 
-    private UserData getValidUser() {
-        return new UserData(
+    private User getValidUser() {
+        return new User(
                 0,
                 "user@puser.ru",
                 "mecheniy",
