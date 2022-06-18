@@ -1,9 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.IllegalIdException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -12,40 +13,64 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final Map<Long, Film> films = new HashMap<>();
-    private long id = 1;
+    private final FilmService service;
+
+    @Autowired
+    public FilmController(FilmService service) {
+        this.service = service;
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable("id") final long filmId, @PathVariable final long userId) {
+        service.addLike(filmId, userId);
+        log.info("Added like to film with id = {} by user with id = {}" , filmId, userId);
+    }
 
     @PostMapping
     public Film create(@RequestBody @Valid Film film) {
-        if (film.getId() != 0) {
-            log.warn("Attempt to create film with assigned id");
-            throw new IllegalIdException("Cannot create film with assigned id");
-        }
-        long currentId = generateId();
-        film.setId(currentId);
-        log.info("Add film {}", film);
-        films.put(currentId, film);
-        return film;
+        Film createdFilm = service.createFilm(film);
+        log.info("Create film {}", createdFilm);
+        return createdFilm;
+    }
+
+    @DeleteMapping("/{id}")
+    public Film delete(@PathVariable final long id) {
+        Film deletedFilm = service.deleteFilm(id);
+        log.info("Delete film {}", deletedFilm);
+        return deletedFilm;
     }
 
     @GetMapping
-    public Collection<Film> findAll() {
-        return films.values();
+    public List<Film> findAll() {
+        List<Film> films = service.getAllFilms();
+        log.info("Get all films");
+        return  films;
+    }
+
+    @GetMapping("/{id}")
+    public Film get(@PathVariable final long id){
+        Film readFilm = service.getFilm(id);
+        log.info("Get {}", readFilm);
+        return readFilm;
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getTop(@RequestParam(defaultValue = "10") final int count) {
+        List<Film> top = service.getTopFilms(count);
+        log.info("Get top {} films", count);
+        return top;
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable("id") final long filmId, @PathVariable final long userId) {
+        service.removeLike(filmId, userId);
+        log.info("Like has been removed from film with id = {} by user with id = {}", filmId, userId);
     }
 
     @PutMapping
     public Film update(@RequestBody @Valid Film film) {
-        long id = film.getId();
-        if (films.containsKey(id)) {
-            log.info("Update film {}", film);
-            films.put(id, film);
-            return film;
-        }
-        log.warn("Attempt to update non-existing film");
-        throw new IllegalIdException("Id " + id + " isn't exist");
-    }
-
-    private long generateId() {
-        return id++;
+        Film updatedFilm = service.updateFilm(film);
+        log.info("Update {}", updatedFilm);
+        return updatedFilm;
     }
 }
