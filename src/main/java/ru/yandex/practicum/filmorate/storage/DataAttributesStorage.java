@@ -4,8 +4,6 @@ import ru.yandex.practicum.filmorate.model.DataAttributes;
 
 import java.util.Collection;
 
-//вопрос к ревьюеру: идея ругается на использование чистого DataAttributes без спецификатора типа.
-// Нормально ли такое использование?
 public interface DataAttributesStorage<T extends DataAttributes> {
     T create(T dataAttribute);
     T delete(long id);

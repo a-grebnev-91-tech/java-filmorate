@@ -20,15 +20,15 @@ public abstract class InMemoryDataStorage<T extends BaseData> extends InMemorySt
         }
         long currentId = generateId();
         data.setId(currentId);
-        super.storage.put(currentId, data);
+        super.getStorage().put(currentId, data);
         return data;
     }
 
     @Override
     public T update(final T baseEntity) {
         long id = baseEntity.getId();
-        if (super.storage.containsKey(id)) {
-            super.storage.put(id, baseEntity);
+        if (super.getStorage().containsKey(id)) {
+            super.getStorage().put(id, baseEntity);
             return baseEntity;
         } else {
             throw new NotFoundException("Entry with id  " + id + " isn't exist.");

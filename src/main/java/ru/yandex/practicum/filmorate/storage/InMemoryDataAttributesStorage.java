@@ -13,15 +13,15 @@ public abstract class InMemoryDataAttributesStorage<T extends DataAttributes>
         if (isExist(dataAttribute.getDataId())) {
             throw new EntryAlreadyExistException("Cannot create entry because it already exist");
         }
-        super.storage.put(dataAttribute.getDataId(), dataAttribute);
+        super.getStorage().put(dataAttribute.getDataId(), dataAttribute);
         return dataAttribute;
     }
 
     @Override
     public T update(T baseEntity) {
         long id = baseEntity.getDataId();
-        if (storage.containsKey(id)) {
-            storage.put(id, baseEntity);
+        if (getStorage().containsKey(id)) {
+            getStorage().put(id, baseEntity);
             return baseEntity;
         } else {
             throw new IllegalIdException("Entry with id  " + id + " isn't exist.");

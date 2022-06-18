@@ -28,7 +28,7 @@ public class UserController {
             @PathVariable("friendId") final long anotherUserId
     ) {
         service.addFriendship(userId, anotherUserId);
-        log.info("User with id = " + userId + " add user with id " + anotherUserId + " to friends");
+        log.info("User with id = {} add user with id = {} to friends", userId, anotherUserId);
     }
 
     @PostMapping
@@ -66,7 +66,7 @@ public class UserController {
     @GetMapping("/{id}/friends")
     public List<User> getFriends(@PathVariable final long id) {
         List<User> friends = service.getFriends(id);
-        log.info("Get friends from user with id = " + id);
+        log.info("Get friends from user with id = {}", id);
         return friends;
     }
 
@@ -76,7 +76,7 @@ public class UserController {
             @PathVariable final long otherId
     ) {
         List<User> friends = service.getMutualFriends(id, otherId);
-        log.info("Get friends from user with id = " + id);
+        log.info("Get friends from user with id = {}", id);
         return friends;
     }
 
@@ -86,7 +86,7 @@ public class UserController {
             @PathVariable("friendId") final long anotherUserId
     ) {
         service.removeFriendship(userId, anotherUserId);
-        log.info("Friendship between users with ids " + userId + " and " + anotherUserId + " has been removed");
+        log.info("Friendship between users with ids {} and {} has been removed", userId, anotherUserId);
     }
 
     @PutMapping

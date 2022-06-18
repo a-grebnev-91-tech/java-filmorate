@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class FilmRatingService {
-    public static final Comparator<FilmsRating> FILM_RATING_DESC_COMPARATOR =
+    private static final Comparator<FilmsRating> FILM_RATING_DESC_COMPARATOR =
             Comparator.comparing(FilmsRating::rating).reversed();
     private final TreeSet<FilmsRating> sortedRatings;
     private final DataAttributesStorage<FilmsRating> storage;

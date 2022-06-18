@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import java.util.*;
 
 public abstract class InMemoryStorage<T> {
-    final Map<Long, T> storage;
+    private final Map<Long, T> storage;
 
     public InMemoryStorage() {
         this.storage = new HashMap<>();
@@ -39,6 +39,10 @@ public abstract class InMemoryStorage<T> {
             entities.add(get(id));
         }
         return entities;
+    }
+
+    public Map<Long, T> getStorage() {
+        return storage;
     }
 
     public boolean isExist(final long id) {

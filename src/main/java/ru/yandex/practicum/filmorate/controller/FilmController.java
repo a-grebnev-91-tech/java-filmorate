@@ -23,7 +23,7 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable("id") final long filmId, @PathVariable final long userId) {
         service.addLike(filmId, userId);
-        log.info("Added like to film with id = " + filmId + " by user with id =" + userId);
+        log.info("Added like to film with id = {} by user with id = {}" , filmId, userId);
     }
 
     @PostMapping
@@ -57,14 +57,14 @@ public class FilmController {
     @GetMapping("/popular")
     public List<Film> getTop(@RequestParam(defaultValue = "10") final int count) {
         List<Film> top = service.getTopFilms(count);
-        log.info("Get top " + count + " films");
+        log.info("Get top {} films", count);
         return top;
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable("id") final long filmId, @PathVariable final long userId) {
         service.removeLike(filmId, userId);
-        log.info("Like has been removed from film with id = " + filmId + " by user with id = " + userId);
+        log.info("Like has been removed from film with id = {} by user with id = {}", filmId, userId);
     }
 
     @PutMapping
