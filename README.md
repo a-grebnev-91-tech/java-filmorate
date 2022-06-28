@@ -1,2 +1,3 @@
 # java-filmorate
-Template repository for Filmorate project.
+![database diagram](https://github.com/a-grebnev-91-tech/java-filmorate/blob/database-diagram/filmorate_sprint_10.png)
+
