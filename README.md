@@ -11,20 +11,46 @@ FROM film
 ORDER BY likes_count DESC
 LIMIT n
 ```
-
 3. Так как вероятность того, что обозначения возрастных рейтингов будут меняться, [крайне мала](https://i.ytimg.com/vi/Dtjsm4TS0co/hqdefault.jpg),
 было принято решение не заводить отдельную таблицу под рейтинги, в целях улучшения производительности запросов.
 
 4. Пример запроса на получение друзей пользователя с id = 123:
 ```
-SELECT 
-  name
+SELECT name
 FROM user
 WHERE user_id IN 
 (
   SELECT friend_id
   FROM friends
   WHERE user_id = 123
+) 
+OR user_id IN 
+(
+  SELECT user_id
+  FROM friends
+  WHERE friend_id = 123
 );
 ```   
 5. Пример запроса на получение совместных друзей пользователей с id = 123 и id = 456
+```
+SELECT name
+FROM user
+WHERE user_id IN 
+(
+  SELECT friend_id
+  FROM friends
+  WHERE 
+    user_id = 123 AND friend_id <> 456
+    OR 
+    user_id = 456 AND friend_id <> 123
+) 
+OR user_id IN 
+(
+  SELECT user_id
+  FROM friends
+  WHERE 
+    friend_id = 123 AND user_id <> 456
+    OR 
+    user_id = 456 AND friend_id <> 123
+);
+```   
