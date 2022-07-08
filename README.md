@@ -23,12 +23,14 @@ WHERE user_id IN
   SELECT friend_id
   FROM friends
   WHERE user_id = 123
+  AND confirmed IS TRUE
 ) 
 OR user_id IN 
 (
   SELECT user_id
   FROM friends
   WHERE friend_id = 123
+  AND confirmed IS TRUE
 );
 ```   
 5. Пример запроса на получение совместных друзей пользователей с id = 123 и id = 456
@@ -39,18 +41,22 @@ WHERE user_id IN
 (
   SELECT friend_id
   FROM friends
-  WHERE 
+  WHERE (
     user_id = 123 AND friend_id <> 456
     OR 
     user_id = 456 AND friend_id <> 123
+    )
+    AND confirmed IS TRUE
 ) 
 OR user_id IN 
 (
   SELECT user_id
   FROM friends
-  WHERE 
+  WHERE (
     friend_id = 123 AND user_id <> 456
     OR 
     user_id = 456 AND friend_id <> 123
+    )
+    AND confirmed IS TRUE
 );
 ```   
