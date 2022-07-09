@@ -43,5 +43,6 @@ build/
 ### VS Code ###
 .vscode/
 
-### My test class ###
+### My files ###
+/db
 TestClass.java
