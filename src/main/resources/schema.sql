@@ -4,12 +4,12 @@ CREATE TABLE IF NOT EXISTS films
     description  VARCHAR(200),
     duration     INTEGER      NOT NULL,
     likes_count  INTEGER,
-    film_name    VARCHAR(100) NOT NULL,
+    name    VARCHAR(100) NOT NULL,
     release_date DATE         NOT NULL,
     rating       VARCHAR(7),
     CONSTRAINT duration_non_negative CHECK (duration >= 0),
     CONSTRAINT like_count_non_negative CHECK (likes_count >= 0),
-    CONSTRAINT film_name_not_empty CHECK (film_name <> ''),
+    CONSTRAINT film_name_not_empty CHECK (name <> ''),
     CONSTRAINT release_date_is_after CHECK (release_date > '1895-12-28'),
     CONSTRAINT allowed_rating_types CHECK (rating IN ('G', 'PG', 'PG-13', 'R', 'NC-17'))
 );

@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.model.film;
 import lombok.*;
 import ru.yandex.practicum.filmorate.model.BaseData;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.model.MPARating;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.util.ValidReleaseDate;
 
 import javax.validation.constraints.NotBlank;
@@ -31,7 +31,7 @@ public class Film extends BaseData {
     private LocalDate releaseDate;
     @Getter
     @Setter
-    private MPARating rating;
+    private MpaRating rating;
     @Getter
     @Setter
     private Set<FilmGenre> genres;
@@ -51,7 +51,7 @@ public class Film extends BaseData {
                 String description,
                 LocalDate releaseDate,
                 int duration,
-                MPARating rating,
+                MpaRating rating,
                 Set<FilmGenre> genres) {
         this(id, name, description, releaseDate, duration);
         this.rating = rating;

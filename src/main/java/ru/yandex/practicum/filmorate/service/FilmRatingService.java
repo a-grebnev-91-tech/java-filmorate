@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.film.FilmsRating;
@@ -17,7 +18,7 @@ public class FilmRatingService {
     private final DataAttributesStorage<FilmsRating> storage;
 
     @Autowired
-    public FilmRatingService(DataAttributesStorage<FilmsRating> storage) {
+    public FilmRatingService(@Qualifier("likesDBStorage") DataAttributesStorage<FilmsRating> storage) {
         this.storage = storage;
         this.sortedRatings = new TreeSet<>(FILM_RATING_DESC_COMPARATOR.thenComparing(FilmsRating::getFilmId));
     }

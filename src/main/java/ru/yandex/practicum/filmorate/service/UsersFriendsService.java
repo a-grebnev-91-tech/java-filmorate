@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.user.UsersFriends;
@@ -15,7 +16,7 @@ public class UsersFriendsService {
     private final DataAttributesStorage<UsersFriends> storage;
 
     @Autowired
-    public UsersFriendsService(DataAttributesStorage<UsersFriends> storage) {
+    public UsersFriendsService(@Qualifier("friendsDBStorage") DataAttributesStorage<UsersFriends> storage) {
         this.storage = storage;
     }
 
