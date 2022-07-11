@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.in_memory;
 
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 

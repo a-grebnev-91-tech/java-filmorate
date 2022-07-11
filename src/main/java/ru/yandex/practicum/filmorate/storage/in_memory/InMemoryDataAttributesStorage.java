@@ -1,8 +1,9 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.in_memory;
 
 import ru.yandex.practicum.filmorate.exception.EntryAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.IllegalIdException;
 import ru.yandex.practicum.filmorate.model.DataAttributes;
+import ru.yandex.practicum.filmorate.storage.DataAttributesStorage;
 
 public abstract class InMemoryDataAttributesStorage<T extends DataAttributes>
         extends InMemoryStorage<T>
