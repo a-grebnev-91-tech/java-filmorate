@@ -3,74 +3,84 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.util.FilmMapper;
 
 import javax.validation.Valid;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService service;
+    private final FilmMapper mapper;
 
     @Autowired
-    public FilmController(FilmService service) {
+    public FilmController(FilmService service, FilmMapper mapper) {
         this.service = service;
+        this.mapper = mapper;
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable("id") final long filmId, @PathVariable final long userId) {
-        service.addLike(filmId, userId);
-        log.info("Added like to film with id = {} by user with id = {}" , filmId, userId);
+        throw new RuntimeException();
+//        service.addLike(filmId, userId);
+//        log.info("Added like to film with id = {} by user with id = {}" , filmId, userId);
     }
 
     @PostMapping
-    public Film create(@RequestBody @Valid Film film) {
+    public FilmDto create(@RequestBody @Valid FilmDto filmDto) {
+        Film film = mapper.filmDtoToFilm(filmDto);
         Film createdFilm = service.createFilm(film);
         log.info("Create film {}", createdFilm);
-        return createdFilm;
+        return mapper.filmToFilmDto(createdFilm);
     }
 
     @DeleteMapping("/{id}")
-    public Film delete(@PathVariable final long id) {
+    public FilmDto delete(@PathVariable final long id) {
         Film deletedFilm = service.deleteFilm(id);
         log.info("Delete film {}", deletedFilm);
-        return deletedFilm;
+        return mapper.filmToFilmDto(deletedFilm);
     }
 
     @GetMapping
-    public List<Film> findAll() {
+    public List<FilmDto> findAll() {
         List<Film> films = service.getAllFilms();
         log.info("Get all films");
-        return  films;
+        return films.stream().map(mapper::filmToFilmDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Film get(@PathVariable final long id){
+    public FilmDto get(@PathVariable final long id){
         Film readFilm = service.getFilm(id);
         log.info("Get {}", readFilm);
-        return readFilm;
+        return mapper.filmToFilmDto(readFilm);
     }
 
     @GetMapping("/popular")
-    public List<Film> getTop(@RequestParam(defaultValue = "10") final int count) {
-        List<Film> top = service.getTopFilms(count);
-        log.info("Get top {} films", count);
-        return top;
+    public List<FilmDto> getTop(@RequestParam(defaultValue = "10") final int count) {
+        throw new RuntimeException();
+//        List<Film> top = service.getTopFilms(count);
+//        log.info("Get top {} films", count);
+//        return top.stream().map(mapper::filmToFilmDto).collect(Collectors.toList());
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable("id") final long filmId, @PathVariable final long userId) {
-        service.removeLike(filmId, userId);
-        log.info("Like has been removed from film with id = {} by user with id = {}", filmId, userId);
+        throw new RuntimeException();
+//        service.removeLike(filmId, userId);
+//        log.info("Like has been removed from film with id = {} by user with id = {}", filmId, userId);
     }
 
     @PutMapping
-    public Film update(@RequestBody @Valid Film film) {
+    public FilmDto update(@RequestBody @Valid FilmDto filmDto) {
+        Film film = mapper.filmDtoToFilm(filmDto);
         Film updatedFilm = service.updateFilm(film);
         log.info("Update {}", updatedFilm);
-        return updatedFilm;
+        return mapper.filmToFilmDto(updatedFilm);
     }
 }

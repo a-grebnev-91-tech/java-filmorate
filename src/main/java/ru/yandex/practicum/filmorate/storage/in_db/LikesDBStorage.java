@@ -9,7 +9,7 @@ import java.util.Collection;
 @Component("likesDBStorage")
 public class LikesDBStorage implements DataAttributesStorage<FilmsRating> {
     @Override
-    public FilmsRating create(FilmsRating dataAttribute) {
+    public FilmsRating create(FilmsRating filmsRating) {
         return null;
     }
 

@@ -23,10 +23,10 @@ public class FilmService {
     }
 
     public void addLike(final long filmId, final long userId) {
-        if (isUserExist(userId) && isFilmExist(filmId)) {
+        Film film = filmsStorage.get(filmId);
+        if (isUserExist(userId)) {
+            film.addLike();
             ratingService.addLike(filmId, userId);
-        } else if (isUserExist(userId)) {
-            throw new NotFoundException("Film with id " + filmId + " isn't exist");
         } else {
             throw new NotFoundException("User with id " + userId + " isn't exist");
         }
@@ -34,7 +34,6 @@ public class FilmService {
 
     public Film createFilm(final Film film) {
         Film created = filmsStorage.create(film);
-        ratingService.addFilm(film.getId());
         return created;
     }
 
@@ -53,8 +52,9 @@ public class FilmService {
     }
 
     public List<Film> getTopFilms(final int count) {
-        List<Long> topIds = ratingService.getTop(count);
-        return new ArrayList<>(filmsStorage.getSome(topIds));
+//        List<Long> topIds = ratingService.getTop(count);
+//        return new ArrayList<>(filmsStorage.getSome(topIds));
+        return null;
     }
 
     public void removeLike(final long filmId, final long userId) {
@@ -62,6 +62,7 @@ public class FilmService {
     }
 
     public Film updateFilm(final Film film) {
+        //todo update likecount
         return filmsStorage.update(film);
     }
 
