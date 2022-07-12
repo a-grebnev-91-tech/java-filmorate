@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.DataStorage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserService {
@@ -34,13 +33,12 @@ public class UserService {
 
     public User createUser(User user) {
         user = usersStorage.create(user);
-        friendsService.addUser(user.getId());
         return user;
     }
 
     public User deleteUser(final long id) {
         User deletedUser = usersStorage.delete(id);
-        friendsService.deleteUser(id);
+        friendsService.removeUser(id);
         return deletedUser;
     }
 
@@ -49,12 +47,11 @@ public class UserService {
     }
 
     public List<User> getFriends(final long id) {
-        Set<Long> friendsIds = friendsService.getFriends(id);
-        return new ArrayList<>(usersStorage.getSome(friendsIds));
+        return friendsService.getFriends(id);
     }
 
     public List<User> getMutualFriends(final long userId, final long anotherUserId) {
-        return new ArrayList<>(usersStorage.getSome(friendsService.getMutualFriends(userId, anotherUserId)));
+        return friendsService.getMutualFriends(userId, anotherUserId);
     }
 
     public User getUser(long id) {

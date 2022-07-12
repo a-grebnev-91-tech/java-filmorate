@@ -3,44 +3,26 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.film.FilmsRating;
-import ru.yandex.practicum.filmorate.storage.DataAttributesStorage;
+import ru.yandex.practicum.filmorate.storage.FilmRatingStorage;
 
 @Service
 public class FilmRatingService {
-    private final DataAttributesStorage<FilmsRating> storage;
+    private final FilmRatingStorage storage;
 
     @Autowired
-    public FilmRatingService(@Qualifier("likesDBStorage") DataAttributesStorage<FilmsRating> storage) {
+    public FilmRatingService(@Qualifier("likesDBStorage") FilmRatingStorage storage) {
         this.storage = storage;
     }
 
     public void addLike(final long filmId, final long userId) {
-        FilmsRating entry;
-        try {
-            entry = storage.get(filmId);
-            entry.addLike(userId);
-            storage.update(entry);
-        } catch (NotFoundException ex) {
-            entry = new FilmsRating(filmId);
-            entry.addLike(userId);
-            storage.create(entry);
-        }
+        storage.addLike(filmId, userId);
     }
 
     public void deleteFilm(final long filmId) {
-        FilmsRating deletedEntry = storage.delete(filmId);
+        storage.deleteFilmFromRating(filmId);
     }
 
-    public void removeLike(final long filmId, final long userId) {
-        FilmsRating entry = storage.get(filmId);
-        try {
-            entry.removeLike(userId);
-        } catch (NotFoundException ex) {
-            throw ex;
-        } finally {
-            storage.update(entry);
-        }
+    public boolean removeLike(final long filmId, final long userId) {
+        return storage.removeLike(filmId, userId);
     }
 }

@@ -77,6 +77,10 @@ public class Film extends BaseData {
         likeCount++;
     }
 
+    public void removeLike() {
+        likeCount--;
+    }
+
     @Override
     public String toString() {
         return "Film{" +

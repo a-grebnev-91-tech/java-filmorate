@@ -1,45 +1,35 @@
 package ru.yandex.practicum.filmorate.storage.in_db;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.user.UsersFriends;
-import ru.yandex.practicum.filmorate.storage.DataAttributesStorage;
+import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.storage.FriendStorage;
 
-import java.util.Collection;
+import java.util.List;
 
 @Component("friendsDBStorage")
-public class FriendsDBStorage implements DataAttributesStorage<UsersFriends> {
+public class FriendsDBStorage implements FriendStorage {
     @Override
-    public UsersFriends create(UsersFriends dataAttribute) {
+    public void addFriendship(long userId, long friendId) {
+
+    }
+
+    @Override
+    public List<User> getFriends(long userId) {
         return null;
     }
 
     @Override
-    public UsersFriends delete(long id) {
+    public List<User> getMutualFriends(long userId, long friendId) {
         return null;
     }
 
     @Override
-    public UsersFriends get(long id) {
-        return null;
+    public void removeFriendship(long userId, long friendId) {
+
     }
 
     @Override
-    public Collection<UsersFriends> getAll() {
-        return null;
-    }
+    public void removeUser(long userId) {
 
-    @Override
-    public Collection<UsersFriends> getSome(Collection<Long> ids) {
-        return null;
-    }
-
-    @Override
-    public boolean isExist(long id) {
-        return false;
-    }
-
-    @Override
-    public UsersFriends update(UsersFriends dataAttribute) {
-        return null;
     }
 }

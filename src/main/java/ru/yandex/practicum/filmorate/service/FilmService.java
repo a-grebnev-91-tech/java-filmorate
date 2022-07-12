@@ -5,69 +5,78 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.film.Film;
-import ru.yandex.practicum.filmorate.storage.DataStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.*;
 
 @Service
 public class FilmService {
     private final FilmRatingService ratingService;
-    private final DataStorage<Film> filmsStorage;
+    private final FilmStorage filmStorage;
     private final UserService userService;
 
     @Autowired
-    public FilmService(@Qualifier("filmDBStorage") DataStorage<Film> dataStorage, FilmRatingService ratingService, UserService userService) {
-        this.filmsStorage = dataStorage;
+    public FilmService(@Qualifier("filmDBStorage") FilmStorage filmStorage,
+                       FilmRatingService ratingService,
+                       UserService userService) {
+        this.filmStorage = filmStorage;
         this.ratingService = ratingService;
         this.userService = userService;
     }
 
     public void addLike(final long filmId, final long userId) {
-        Film film = filmsStorage.get(filmId);
         if (isUserExist(userId)) {
+            Film film = filmStorage.get(filmId);
             film.addLike();
             ratingService.addLike(filmId, userId);
+            filmStorage.update(film);
         } else {
             throw new NotFoundException("User with id " + userId + " isn't exist");
         }
     }
 
     public Film createFilm(final Film film) {
-        Film created = filmsStorage.create(film);
-        return created;
+        return filmStorage.create(film);
     }
 
     public Film deleteFilm(final long filmId) {
-        Film deleted = filmsStorage.delete(filmId);
+        Film deleted = filmStorage.delete(filmId);
         ratingService.deleteFilm(filmId);
         return deleted;
     }
 
     public List<Film> getAllFilms() {
-        return new ArrayList<>(filmsStorage.getAll());
+        return new ArrayList<>(filmStorage.getAll());
     }
 
     public Film getFilm(final long filmId) {
-        return filmsStorage.get(filmId);
+        return filmStorage.get(filmId);
     }
 
     public List<Film> getTopFilms(final int count) {
-//        List<Long> topIds = ratingService.getTop(count);
-//        return new ArrayList<>(filmsStorage.getSome(topIds));
-        return null;
+        return filmStorage.getTop(count);
     }
 
     public void removeLike(final long filmId, final long userId) {
-        ratingService.removeLike(filmId, userId);
+        if (isUserExist(userId)) {
+            Film film = filmStorage.get(filmId);
+            if (ratingService.removeLike(filmId, userId)) {
+                film.removeLike();
+                filmStorage.update(film);
+            } else {
+                throw new NotFoundException("User with id " + userId + " didn't like the movie with id " + filmId);
+            }
+        } else {
+            throw new NotFoundException("User with id " + userId + " isn't exist");
+        }
     }
 
     public Film updateFilm(final Film film) {
-        //todo update likecount
-        return filmsStorage.update(film);
+        return filmStorage.update(film);
     }
 
     private boolean isFilmExist(final long filmId) {
-        return filmsStorage.isExist(filmId);
+        return filmStorage.isExist(filmId);
     }
 
     private boolean isUserExist(final long userId) {

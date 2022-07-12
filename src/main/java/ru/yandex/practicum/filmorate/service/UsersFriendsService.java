@@ -3,69 +3,37 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.user.UsersFriends;
-import ru.yandex.practicum.filmorate.storage.DataAttributesStorage;
+import ru.yandex.practicum.filmorate.model.user.User;
+import ru.yandex.practicum.filmorate.storage.FriendStorage;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 public class UsersFriendsService {
-    private final DataAttributesStorage<UsersFriends> storage;
+    private final FriendStorage storage;
 
     @Autowired
-    public UsersFriendsService(@Qualifier("friendsDBStorage") DataAttributesStorage<UsersFriends> storage) {
+    public UsersFriendsService(@Qualifier("friendsDBStorage") FriendStorage storage) {
         this.storage = storage;
     }
 
     public void addFriendship(final long userId, final long anotherUserId) {
-        addFriend(userId, anotherUserId);
-        addFriend(anotherUserId, userId);
+        storage.addFriendship(userId, anotherUserId);
     }
 
-    public void addUser(final long userId) {
-        storage.create(new UsersFriends(userId));
+    public void removeUser(final long userId) {
+        storage.removeUser(userId);
     }
 
-    public void deleteUser(final long userId) {
-        storage.delete(userId);
+    public List<User> getFriends(final long userId) {
+        return storage.getFriends(userId);
     }
 
-    public Set<Long> getFriends(final long userId) {
-        return storage.get(userId).getFriends();
-    }
-
-    public Set<Long> getMutualFriends(final long userId, final long anotherUserId) {
-        Collection<Long> userFriends = storage.get(userId).getFriends();
-        Collection<Long> anotherUserFriends = storage.get(anotherUserId).getFriends();
-        return userFriends.stream().filter(anotherUserFriends::contains).collect(Collectors.toSet());
+    public List<User> getMutualFriends(final long userId, final long anotherUserId) {
+        return storage.getMutualFriends(userId, anotherUserId);
     }
 
     public void removeFriendship(final long userId, final long anotherUserId) {
-        removeFriend(userId, anotherUserId);
-        removeFriend(anotherUserId, userId);
+        storage.removeFriendship(userId, anotherUserId);
     }
-
-    private void addFriend(long userId, long friendId) {
-        UsersFriends entry;
-        try {
-            entry = storage.get(userId);
-            entry.addFriend(friendId);
-            storage.update(entry);
-        } catch (NotFoundException ex) {
-            entry = new UsersFriends(userId);
-            entry.addFriend(friendId);
-            storage.create(entry);
-        }
-    }
-
-    private void removeFriend(long userId, long friendId) {
-        UsersFriends entry = storage.get(userId);
-        entry.removeFriend(friendId);
-        storage.update(entry);
-    }
-
-
 }

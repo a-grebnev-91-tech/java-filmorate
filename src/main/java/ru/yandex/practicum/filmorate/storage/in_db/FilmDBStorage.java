@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.DataStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -20,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component("filmDBStorage")
-public class FilmDBStorage implements DataStorage<Film> {
+public class FilmDBStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -73,12 +74,18 @@ public class FilmDBStorage implements DataStorage<Film> {
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
     }
 
-    //todo not tested
+    //todo not tested may be delete?
     @Override
     public Collection<Film> getSome(Collection<Long> ids) {
         String placeholders = String.join(",", Collections.nCopies(ids.size(), "?"));
         String sqlQuery = "SELECT * FROM films WHERE film_id IN " + placeholders;
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
+    }
+
+    @Override
+    public List<Film> getTop(int count) {
+        String sqlQuery = "SELECT * FROM films ORDER BY likes_count DESC LIMIT ?";
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
     }
 
     @Override
