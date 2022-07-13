@@ -61,8 +61,8 @@ public class FilmDBStorage implements FilmStorage {
     public Film get(long id) {
         String sqlFilmQuery = "SELECT * FROM films WHERE film_id = ?";
         List<Film> films = jdbcTemplate.query(sqlFilmQuery, (rs, rowNum) -> makeFilm(rs), id);
-        if (films.size() < 1) {
-            throw new NotFoundException("Film with id " + id + " isn't exist.");
+        if (films.isEmpty()) {
+            throw new NotFoundException(String.format("Film with id %d isn't exist.", id));
         }
         return films.get(0);
     }
