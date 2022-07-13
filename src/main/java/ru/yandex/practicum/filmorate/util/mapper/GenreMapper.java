@@ -42,9 +42,14 @@ public class GenreMapper {
         List<FilmGenreDto> dtos;
         if (genres != null) {
             dtos = genres.stream().map(this::genreToDto).collect(Collectors.toList());
+            sort(dtos);
         } else {
             dtos = Collections.emptyList();
         }
         return dtos;
+    }
+
+    private void sort(List<FilmGenreDto> list) {
+        list.sort(Comparator.comparingInt(FilmGenreDto::getId));
     }
 }

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import ru.yandex.practicum.filmorate.model.dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.film.Film;
 
 import javax.validation.ConstraintViolation;
@@ -64,13 +65,12 @@ class FilmValidationTest {
         );
     }
 
-//    @MethodSource("test2MethodSource")
-//    @ParameterizedTest(name = "{index}. Check invalid film with {1}")
-//    void test2_shouldFailValidationInvalidMovie(Film film, String testResultDescription) {
-//        Set<ConstraintViolation<Film>> violations = validator.validate(film);
-//        assertFalse(violations.isEmpty());
-//        assertEquals(film, violations.iterator().next().getRootBean());
-//    }
+    @MethodSource("test2MethodSource")
+    @ParameterizedTest(name = "{index}. Check invalid film with {1}")
+    void test2_shouldFailValidationInvalidMovie(Film film, String testResultDescription) {
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertTrue(violations.isEmpty());
+    }
 
     Stream<Arguments> test2MethodSource() {
         Film invalidName = getValidFilm();

@@ -24,7 +24,7 @@ public enum MpaRating {
         if (id <= ratings.length && id > 0) {
             return ratings[id - 1];
         } else {
-            throw new ValidationException("Mpa rating id is invalid");
+            throw new NotFoundException("Mpa rating id is invalid");
         }
     }
 

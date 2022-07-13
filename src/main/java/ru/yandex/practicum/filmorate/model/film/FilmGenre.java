@@ -26,7 +26,7 @@ public enum FilmGenre {
         if (id <= genres.length && id > 0) {
             return genres[id - 1];
         } else {
-            throw new ValidationException("Genre id is invalid");
+            throw new NotFoundException("Genre id is invalid");
         }
     }
 

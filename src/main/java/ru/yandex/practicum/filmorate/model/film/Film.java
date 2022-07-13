@@ -52,7 +52,11 @@ public class Film extends BaseData {
                 Set<FilmGenre> genres) {
         this(id, name, description, releaseDate, duration);
         this.rating = rating;
-        this.genres = genres;
+        if (genres == null) {
+            genres = new HashSet<>();
+        } else {
+            this.genres = genres;
+        }
     }
 
     public Film(long id,
