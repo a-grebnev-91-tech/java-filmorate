@@ -6,10 +6,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.model.MpaRating;
+import ru.yandex.practicum.filmorate.model.film.FilmGenre;
+import ru.yandex.practicum.filmorate.model.film.MpaRating;
 import ru.yandex.practicum.filmorate.model.film.Film;
-import ru.yandex.practicum.filmorate.storage.DataStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.Date;

@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.yandex.practicum.filmorate.util.ValidReleaseDate;
+import ru.yandex.practicum.filmorate.util.validator.ValidReleaseDate;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

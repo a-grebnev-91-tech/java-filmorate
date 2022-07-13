@@ -2,8 +2,6 @@ package ru.yandex.practicum.filmorate.model.film;
 
 import lombok.*;
 import ru.yandex.practicum.filmorate.model.BaseData;
-import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.time.LocalDate;
 import java.util.HashSet;
