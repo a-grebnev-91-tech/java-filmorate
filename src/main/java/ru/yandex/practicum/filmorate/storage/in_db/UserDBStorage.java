@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.storage.DataStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +22,7 @@ import java.util.List;
 
 @Slf4j
 @Component("userDBStorage")
-public class UserDBStorage implements DataStorage<User> {
+public class UserDBStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -73,8 +74,8 @@ public class UserDBStorage implements DataStorage<User> {
     @Override
     public Collection<User> getSome(Collection<Long> ids) {
         String placeholders = String.join(",", Collections.nCopies(ids.size(), "?"));
-        String sqlQuery = "SELECT * FROM users WHERE user_id IN " + placeholders;
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs));
+        String sqlQuery = String.format("SELECT * FROM users WHERE user_id IN (%s)", placeholders);
+        return jdbcTemplate.query(sqlQuery,ids.toArray(), (rs, rowNum) -> makeUser(rs));
     }
 
     @Override

@@ -74,7 +74,7 @@ public class FilmDBStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
     }
 
-    //todo not tested may be delete?
+    //todo not working
     @Override
     public Collection<Film> getSome(Collection<Long> ids) {
         String placeholders = String.join(",", Collections.nCopies(ids.size(), "?"));
@@ -149,7 +149,7 @@ public class FilmDBStorage implements FilmStorage {
         List<Object[]> batchArgsList = new ArrayList<>();
         Object[] objArray;
         for (FilmGenre genre : film.getGenres()) {
-            objArray = new Object[] {filmId, genre.getId()};
+            objArray = new Object[]{filmId, genre.getId()};
             batchArgsList.add(objArray);
         }
         jdbcTemplate.batchUpdate(sqlInsertQuery, batchArgsList);

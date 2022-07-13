@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.user.User;
 import ru.yandex.practicum.filmorate.storage.DataStorage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -47,11 +48,14 @@ public class UserService {
     }
 
     public List<User> getFriends(final long id) {
-        return friendsService.getFriends(id);
+        List<Long> friendsIds = friendsService.getFriends(id);
+        return getFriendsByIds(friendsIds);
     }
 
     public List<User> getMutualFriends(final long userId, final long anotherUserId) {
-        return friendsService.getMutualFriends(userId, anotherUserId);
+        List<Long> friendsIds = friendsService.getMutualFriends(userId, anotherUserId);
+        return getFriendsByIds(friendsIds);
+
     }
 
     public User getUser(long id) {
@@ -62,11 +66,21 @@ public class UserService {
         return usersStorage.isExist(userId);
     }
 
-    public void removeFriendship(final long userId, final long anotherUserId) {
-        friendsService.removeFriendship(userId, anotherUserId);
+    public void removeFriendship(final long initiatorId, final long friendId) {
+        friendsService.removeFriendship(initiatorId, friendId);
     }
 
     public User updateUser(final User user) {
         return usersStorage.update(user);
+    }
+
+    private List<User> getFriendsByIds(List<Long> friendsIds) {
+        if (friendsIds.size() > 1) {
+            return List.copyOf(usersStorage.getSome(friendsIds));
+        } else if (friendsIds.size() == 1) {
+            return List.of(usersStorage.get(friendsIds.get(0)));
+        } else {
+            return Collections.emptyList();
+        }
     }
 }
