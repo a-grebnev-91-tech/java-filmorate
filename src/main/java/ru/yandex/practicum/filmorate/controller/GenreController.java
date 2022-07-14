@@ -14,25 +14,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/genres")
 public class GenreController {
-    private final GenreMapper mapper;
     private final GenreService service;
 
     @Autowired
-    public GenreController(GenreService service, GenreMapper mapper) {
-        this.mapper = mapper;
+    public GenreController(GenreService service) {
         this.service = service;
     }
 
     @GetMapping
     public List<FilmGenreDto> getAll() {
         log.info("Get all films");
-        return mapper.batchGenreToDto(service.getAll());
+        return service.getAll();
     }
 
     @GetMapping("/{id}")
     public FilmGenreDto getById(@PathVariable("id") int id) {
-        FilmGenre genre = service.get(id);
+        FilmGenreDto genre = service.get(id);
         log.info("Get genre {}", genre);
-        return mapper.genreToDto(genre);
+        return genre;
     }
 }

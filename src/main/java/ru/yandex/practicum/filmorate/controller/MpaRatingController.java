@@ -17,25 +17,23 @@ import java.util.List;
 @RestController
 @RequestMapping("mpa")
 public class MpaRatingController {
-    private final MpaRatingMapper mapper;
     private final MpaRatingService service;
 
     @Autowired
     public MpaRatingController(MpaRatingService service, MpaRatingMapper mapper) {
-        this.mapper = mapper;
         this.service = service;
     }
 
     @GetMapping
     public List<MpaRatingDto> getAll() {
         log.info("Get all films");
-        return mapper.batchRatingToDto(service.getAll());
+        return service.getAll();
     }
 
     @GetMapping("/{id}")
     public MpaRatingDto getById(@PathVariable("id") int id) {
-        MpaRating rating = service.get(id);
+        MpaRatingDto rating = service.get(id);
         log.info("Get genre {}", rating);
-        return mapper.ratingToDto(rating);
+        return rating;
     }
 }
