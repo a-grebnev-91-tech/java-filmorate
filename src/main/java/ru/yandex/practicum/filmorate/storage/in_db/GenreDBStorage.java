@@ -17,7 +17,6 @@ public class GenreDBStorage implements GenreStorage {
     private static final String GET_ALL = "SELECT name FROM genre ORDER BY genre_id";
     private static final String GET_BY_ID = "SELECT name FROM genre WHERE genre_id = ?";
 
-
     @Autowired
     public GenreDBStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

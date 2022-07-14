@@ -36,7 +36,6 @@ public class FriendDBStorage implements FriendStorage {
     private static final String CHECK_UNABLE_TO_CREATE_FRIENDSHIP = "SELECT confirmed FROM friends " +
             "WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
 
-
     @Autowired
     public FriendDBStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
