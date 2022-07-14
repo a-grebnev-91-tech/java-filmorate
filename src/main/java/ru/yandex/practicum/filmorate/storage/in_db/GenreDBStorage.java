@@ -14,6 +14,9 @@ import java.util.List;
 @Component
 public class GenreDBStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
+    private static final String GET_ALL = "SELECT name FROM genre ORDER BY genre_id";
+    private static final String GET_BY_ID = "SELECT name FROM genre WHERE genre_id = ?";
+
 
     @Autowired
     public GenreDBStorage(JdbcTemplate jdbcTemplate) {
@@ -23,14 +26,12 @@ public class GenreDBStorage implements GenreStorage {
 
     @Override
     public List<FilmGenre> getAll() {
-        String sqlQuery = "SELECT name FROM genre ORDER BY genre_id";
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeGenre(rs));
+        return jdbcTemplate.query(GET_ALL, (rs, rowNum) -> makeGenre(rs));
     }
 
     @Override
     public FilmGenre get(int id) {
-        String sqlQuery = "SELECT name FROM genre WHERE genre_id = ?";
-        List<FilmGenre> genres = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeGenre(rs), id);
+        List<FilmGenre> genres = jdbcTemplate.query(GET_BY_ID, (rs, rowNum) -> makeGenre(rs), id);
         if (genres.isEmpty()) {
             throw new NotFoundException(String.format("Genre with id %d isn't exist", id));
         }
