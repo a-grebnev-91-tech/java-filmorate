@@ -22,6 +22,19 @@ import java.util.stream.Collectors;
 @Component("filmDBStorage")
 public class FilmDBStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
+    private static final String CREATE_FILM = "INSERT INTO films (description, duration, name, release_date, rating) " +
+            "VALUES (?, ?, ?, ?, ?)";
+    private static final String DELETE_FILM = "DELETE FROM films WHERE film_id = ?";
+    private static final String GET_FILM = "SELECT * FROM films WHERE film_id = ?";
+    private static final String GET_ALL_FILMS = "SELECT * FROM films";
+    private static final String GET_SOME_BY_ID = "SELECT * FROM users WHERE user_id IN (%s)";
+    private static final String GET_TOP_FILMS = "SELECT * FROM films ORDER BY likes_count DESC LIMIT ?";
+    private static final String UPDATE_FILM = "UPDATE films SET description = ?, duration = ?, likes_count = ?, " +
+            "name = ?, release_date = ?, rating = ? WHERE film_id = ?";
+    private static final String DELETE_FILM_FROM_FILM_GENRE = "DELETE FROM film_genre WHERE film_id = ?";
+    private static final String GET_GENRES_BY_FILM_ID = "SELECT name FROM genre WHERE genre_id IN " +
+            "(SELECT genre_id FROM film_genre WHERE film_id = ?)";
+    private static final String UPDATE_FILM_GENRE = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
 
     @Autowired
     public FilmDBStorage(JdbcTemplate jdbcTemplate) {
@@ -30,11 +43,9 @@ public class FilmDBStorage implements FilmStorage {
 
     @Override
     public Film create(Film film) {
-        String sqlQuery = "INSERT INTO films (description, duration, name, release_date, rating) " +
-                "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"film_id"});
+            PreparedStatement stmt = connection.prepareStatement(CREATE_FILM, new String[]{"film_id"});
             stmt.setString(1, film.getDescription());
             stmt.setInt(2, film.getDuration());
             stmt.setString(3, film.getName());
@@ -51,16 +62,14 @@ public class FilmDBStorage implements FilmStorage {
     @Override
     public Film delete(long id) {
         Film filmToDelete = get(id);
-        String sqlQuery = "DELETE FROM films WHERE film_id = ?";
         deleteFromFilmGenre(id);
-        jdbcTemplate.update(sqlQuery, id);
+        jdbcTemplate.update(DELETE_FILM, id);
         return filmToDelete;
     }
 
     @Override
     public Film get(long id) {
-        String sqlFilmQuery = "SELECT * FROM films WHERE film_id = ?";
-        List<Film> films = jdbcTemplate.query(sqlFilmQuery, (rs, rowNum) -> makeFilm(rs), id);
+        List<Film> films = jdbcTemplate.query(GET_FILM, (rs, rowNum) -> makeFilm(rs), id);
         if (films.isEmpty()) {
             throw new NotFoundException(String.format("Film with id %d isn't exist.", id));
         }
@@ -69,22 +78,19 @@ public class FilmDBStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getAll() {
-        String sqlQuery = "SELECT * FROM films";
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
+        return jdbcTemplate.query(GET_ALL_FILMS, (rs, rowNum) -> makeFilm(rs));
     }
 
-    //todo not working
     @Override
     public Collection<Film> getSome(Collection<Long> ids) {
         String placeholders = String.join(",", Collections.nCopies(ids.size(), "?"));
-        String sqlQuery = "SELECT * FROM films WHERE film_id IN " + placeholders;
+        String sqlQuery = String.format(GET_SOME_BY_ID, placeholders);
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
     }
 
     @Override
     public List<Film> getTop(int count) {
-        String sqlQuery = "SELECT * FROM films ORDER BY likes_count DESC LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), count);
+        return jdbcTemplate.query(GET_TOP_FILMS, (rs, rowNum) -> makeFilm(rs), count);
     }
 
     @Override
@@ -101,16 +107,16 @@ public class FilmDBStorage implements FilmStorage {
     public Film update(Film film) {
         long id = film.getId();
         if (isExist(id)) {
-            String sqlFilmQuery = "UPDATE films SET description = ?, duration = ?, likes_count = ?, name = ?, " +
-                    "release_date = ?, rating = ? WHERE film_id = ?";
-            jdbcTemplate.update(sqlFilmQuery,
+            jdbcTemplate.update(
+                    UPDATE_FILM,
                     film.getDescription(),
                     film.getDuration(),
                     film.getLikeCount(),
                     film.getName(),
                     film.getReleaseDate(),
                     film.getRating().getTitle(),
-                    film.getId());
+                    film.getId()
+            );
             updateFilmGenre(film);
             return film;
         } else {
@@ -119,14 +125,11 @@ public class FilmDBStorage implements FilmStorage {
     }
 
     private void deleteFromFilmGenre(long id) {
-        String sqlDeleteQuery = "DELETE FROM film_genre WHERE film_id = ?";
-        jdbcTemplate.update(sqlDeleteQuery, id);
+        jdbcTemplate.update(DELETE_FILM_FROM_FILM_GENRE, id);
     }
 
     private List<String> getGenresByFilmId(long id) {
-        String sqlGenreQuery = "SELECT name FROM genre WHERE genre_id IN " +
-                "(SELECT genre_id FROM film_genre WHERE film_id = ?)";
-        return jdbcTemplate.queryForList(sqlGenreQuery, String.class, id);
+        return jdbcTemplate.queryForList(GET_GENRES_BY_FILM_ID, String.class, id);
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
@@ -144,13 +147,12 @@ public class FilmDBStorage implements FilmStorage {
     private void updateFilmGenre(Film film) {
         long filmId = film.getId();
         deleteFromFilmGenre(filmId);
-        String sqlInsertQuery = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
         List<Object[]> batchArgsList = new ArrayList<>();
         Object[] objArray;
         for (FilmGenre genre : film.getGenres()) {
             objArray = new Object[]{filmId, genre.getId()};
             batchArgsList.add(objArray);
         }
-        jdbcTemplate.batchUpdate(sqlInsertQuery, batchArgsList);
+        jdbcTemplate.batchUpdate(UPDATE_FILM_GENRE, batchArgsList);
     }
 }
