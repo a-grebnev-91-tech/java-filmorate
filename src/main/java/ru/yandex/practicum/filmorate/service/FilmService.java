@@ -4,24 +4,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.util.mapper.FilmMapper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
-    private final FilmRatingService ratingService;
     private final FilmStorage filmStorage;
+    private final FilmMapper mapper;
+    private final FilmRatingService ratingService;
     private final UserService userService;
 
     @Autowired
     public FilmService(@Qualifier("filmDBStorage") FilmStorage filmStorage,
                        FilmRatingService ratingService,
-                       UserService userService) {
+                       UserService userService,
+                       FilmMapper mapper) {
         this.filmStorage = filmStorage;
         this.ratingService = ratingService;
         this.userService = userService;
+        this.mapper = mapper;
     }
 
     public void addLike(final long filmId, final long userId) {
@@ -35,26 +41,28 @@ public class FilmService {
         }
     }
 
-    public Film createFilm(final Film film) {
-        return filmStorage.create(film);
+    public FilmDto createFilm(final FilmDto filmDto) {
+        Film film = mapper.dtoToFilm(filmDto);
+        Film created = filmStorage.create(film);
+        return mapper.filmToDto(created);
     }
 
-    public Film deleteFilm(final long filmId) {
+    public FilmDto deleteFilm(final long filmId) {
         Film deleted = filmStorage.delete(filmId);
         ratingService.deleteFilm(filmId);
-        return deleted;
+        return mapper.filmToDto(deleted);
     }
 
-    public List<Film> getAllFilms() {
-        return new ArrayList<>(filmStorage.getAll());
+    public List<FilmDto> getAllFilms() {
+        return filmStorage.getAll().stream().map(mapper::filmToDto).collect(Collectors.toList());
     }
 
-    public Film getFilm(final long filmId) {
-        return filmStorage.get(filmId);
+    public FilmDto getFilm(final long filmId) {
+        return mapper.filmToDto(filmStorage.get(filmId));
     }
 
-    public List<Film> getTopFilms(final int count) {
-        return filmStorage.getTop(count);
+    public List<FilmDto> getTopFilms(final int count) {
+        return filmStorage.getTop(count).stream().map(mapper::filmToDto).collect(Collectors.toList());
     }
 
     public void removeLike(final long filmId, final long userId) {
@@ -71,8 +79,9 @@ public class FilmService {
         }
     }
 
-    public Film updateFilm(final Film film) {
-        return filmStorage.update(film);
+    public FilmDto updateFilm(final FilmDto filmDto) {
+        Film film = mapper.dtoToFilm(filmDto);
+        return mapper.filmToDto(filmStorage.update(film));
     }
 
     private boolean isFilmExist(final long filmId) {

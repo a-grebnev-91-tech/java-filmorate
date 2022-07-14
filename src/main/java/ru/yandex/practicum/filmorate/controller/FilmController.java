@@ -17,12 +17,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService service;
-    private final FilmMapper mapper;
 
     @Autowired
-    public FilmController(FilmService service, FilmMapper mapper) {
+    public FilmController(FilmService service) {
         this.service = service;
-        this.mapper = mapper;
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -33,38 +31,37 @@ public class FilmController {
 
     @PostMapping
     public FilmDto create(@RequestBody @Valid FilmDto filmDto) {
-        Film film = mapper.dtoToFilm(filmDto);
-        Film createdFilm = service.createFilm(film);
+        FilmDto createdFilm = service.createFilm(filmDto);
         log.info("Create film {}", createdFilm);
-        return mapper.filmToDto(createdFilm);
+        return createdFilm;
     }
 
     @DeleteMapping("/{id}")
     public FilmDto delete(@PathVariable final long id) {
-        Film deletedFilm = service.deleteFilm(id);
+        FilmDto deletedFilm = service.deleteFilm(id);
         log.info("Delete film {}", deletedFilm);
-        return mapper.filmToDto(deletedFilm);
+        return deletedFilm;
     }
 
     @GetMapping
     public List<FilmDto> findAll() {
-        List<Film> films = service.getAllFilms();
+        List<FilmDto> films = service.getAllFilms();
         log.info("Get all films");
-        return films.stream().map(mapper::filmToDto).collect(Collectors.toList());
+        return films;
     }
 
     @GetMapping("/{id}")
     public FilmDto get(@PathVariable final long id){
-        Film readFilm = service.getFilm(id);
+        FilmDto readFilm = service.getFilm(id);
         log.info("Get {}", readFilm);
-        return mapper.filmToDto(readFilm);
+        return readFilm;
     }
 
     @GetMapping("/popular")
     public List<FilmDto> getTop(@RequestParam(defaultValue = "10") final int count) {
-        List<Film> top = service.getTopFilms(count);
+        List<FilmDto> top = service.getTopFilms(count);
         log.info("Get top {} films", count);
-        return top.stream().map(mapper::filmToDto).collect(Collectors.toList());
+        return top;
     }
 
     @DeleteMapping("/{id}/like/{userId}")
@@ -75,9 +72,8 @@ public class FilmController {
 
     @PutMapping
     public FilmDto update(@RequestBody @Valid FilmDto filmDto) {
-        Film film = mapper.dtoToFilm(filmDto);
-        Film updatedFilm = service.updateFilm(film);
+        FilmDto updatedFilm = service.updateFilm(filmDto);
         log.info("Update {}", updatedFilm);
-        return mapper.filmToDto(updatedFilm);
+        return updatedFilm;
     }
 }
