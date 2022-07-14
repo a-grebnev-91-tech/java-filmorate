@@ -24,6 +24,13 @@ import java.util.List;
 @Component("userDBStorage")
 public class UserDBStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+    private static final String CREATE_USER = "INSERT INTO users (birthday, email, login, name) VALUES (?, ?, ?, ?)";
+    private static final String DELETE_USER = "DELETE FROM users WHERE user_id = ?";
+    private static final String GET_USER_BY_ID = "SELECT * FROM users WHERE user_id = ?";
+    private static final String GET_ALL_USERS = "SELECT * FROM users";
+    private static final String GET_SOME_USERS_BY_ID = "SELECT * FROM users WHERE user_id IN (%s)";
+    private static final String UPDATE_USER = "UPDATE users SET birthday = ?, email = ?, login = ?, name = ? WHERE " +
+            "user_id = ?";
 
     @Autowired
     public UserDBStorage(JdbcTemplate jdbcTemplate) {
@@ -32,10 +39,9 @@ public class UserDBStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        String sqlQuery = "INSERT INTO users (birthday, email, login, name) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"user_id"});
+            PreparedStatement stmt = connection.prepareStatement(CREATE_USER, new String[]{"user_id"});
             stmt.setDate(1, Date.valueOf(user.getBirthday()));
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getLogin());
@@ -50,15 +56,13 @@ public class UserDBStorage implements UserStorage {
     @Override
     public User delete(long id) {
         User userToDelete = get(id);
-        String sqlQuery = "DELETE FROM users WHERE user_id = ?";
-        jdbcTemplate.update(sqlQuery, id);
+        jdbcTemplate.update(DELETE_USER, id);
         return userToDelete;
     }
 
     @Override
     public User get(long id) {
-        String sqlQuery = "SELECT * FROM users WHERE user_id = ?";
-        List<User> users = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs), id);
+        List<User> users = jdbcTemplate.query(GET_USER_BY_ID, (rs, rowNum) -> makeUser(rs), id);
         if (users.size() < 1) {
             throw new NotFoundException("User with id " + id + " isn't exist.");
         }
@@ -67,14 +71,13 @@ public class UserDBStorage implements UserStorage {
 
     @Override
     public Collection<User> getAll() {
-        String sqlQuery = "SELECT * FROM users";
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs));
+        return jdbcTemplate.query(GET_ALL_USERS, (rs, rowNum) -> makeUser(rs));
     }
 
     @Override
     public Collection<User> getSome(Collection<Long> ids) {
         String placeholders = String.join(",", Collections.nCopies(ids.size(), "?"));
-        String sqlQuery = String.format("SELECT * FROM users WHERE user_id IN (%s)", placeholders);
+        String sqlQuery = String.format(GET_SOME_USERS_BY_ID, placeholders);
         return jdbcTemplate.query(sqlQuery,ids.toArray(), (rs, rowNum) -> makeUser(rs));
     }
 
@@ -92,8 +95,7 @@ public class UserDBStorage implements UserStorage {
     public User update(User user) {
         long id = user.getId();
         if (isExist(id)) {
-            String sqlQuery = "UPDATE users SET birthday = ?, email = ?, login = ?, name = ? WHERE user_id = ?";
-            jdbcTemplate.update(sqlQuery, user.getBirthday(), user.getEmail(), user.getLogin(), user.getName(), id);
+            jdbcTemplate.update(UPDATE_USER, user.getBirthday(), user.getEmail(), user.getLogin(), user.getName(), id);
             return user;
         } else {
             throw new NotFoundException("User with id " + id + " isn't exist.");
