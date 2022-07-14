@@ -12,6 +12,30 @@ import java.util.List;
 @Component("friendsDBStorage")
 public class FriendDBStorage implements FriendStorage {
     private final JdbcTemplate jdbcTemplate;
+    private static final String CREATE_FRIENDSHIP = "INSERT INTO friends (user_id, friend_id, confirmed) " +
+            "VALUES (?, ?, FALSE)";
+    private static final String GET_USERS_FRIENDS = "SELECT friend_id FROM friends WHERE user_id = ? UNION " +
+            "SELECT user_id FROM friends WHERE friend_id = ? AND confirmed";
+    private static final String GET_MUTUAL_FRIENDS = "SELECT friend_id FROM friends WHERE user_id = ? AND " +
+            "friend_id <> ? AND (friend_id IN (SELECT user_id FROM friends WHERE friend_id = ? AND user_id <> ? AND" +
+            " confirmed) OR friend_id IN (SELECT friend_id FROM friends WHERE user_id = ? AND friend_id <> ?))";
+    private static final String CHECK_FRIENDSHIP_INITIATOR = "SELECT user_id FROM friends WHERE user_id = ? AND " +
+            "friend_id = ?";
+    private static final String CHECK_FRIENDSHIP_IS_CONFIRMED = "SELECT confirmed FROM friends WHERE user_id = ? AND " +
+            "friend_id = ? OR user_id = ? AND friend_id = ?";
+    private static final String CONFIRM_FRIENDSHIP = "UPDATE friends SET confirmed = TRUE WHERE user_id = ? AND " +
+            "friend_id = ?";
+    private static final String REMOVE_FRIENDSHIP_CONFIRMATION = "UPDATE friends SET confirmation = FALSE WHERE " +
+            "user_id = ? AND friend_id = ?";
+    private static final String REMOVE_FRIENDSHIP = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
+    private static final String REMOVE_USER = "DELETE FROM friends WHERE user_id = ? OR friend_id = ?";
+    private static final String SWAP_INITIATOR = "UPDATE friends SET user_id = ? AND friend_id = ? WHERE " +
+            "user_id = ? AND friend_id = ?";
+    private static final String CHECK_UNABLE_TO_CONFIRM_FRIENDSHIP = "SELECT confirmed FROM friends WHERE " +
+            "user_id = ? AND friend_id = ?";
+    private static final String CHECK_UNABLE_TO_CREATE_FRIENDSHIP = "SELECT confirmed FROM friends " +
+            "WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
+
 
     @Autowired
     public FriendDBStorage(JdbcTemplate jdbcTemplate) {
@@ -20,25 +44,18 @@ public class FriendDBStorage implements FriendStorage {
 
     @Override
     public void addFriendship(long userId, long anotherUserId) {
-        String sqlQuery = "INSERT INTO friends (user_id, friend_id, confirmed) VALUES (?, ?, FALSE)";
-        jdbcTemplate.update(sqlQuery, userId, anotherUserId);
+        jdbcTemplate.update(CREATE_FRIENDSHIP, userId, anotherUserId);
     }
 
     @Override
     public List<Long> getFriends(long userId) {
-        String sqlQuery = "SELECT friend_id FROM friends WHERE user_id = ? " +
-                "UNION " +
-                "SELECT user_id FROM friends WHERE friend_id = ? AND confirmed";
-        return jdbcTemplate.queryForList(sqlQuery, Long.class, userId, userId);
+        return jdbcTemplate.queryForList(GET_USERS_FRIENDS, Long.class, userId, userId);
     }
 
     @Override
     public List<Long> getMutualFriends(long userId, long anotherUserId) {
-        String sqlQuery = "SELECT friend_id FROM friends WHERE user_id = ? AND friend_id <> ? AND (friend_id IN " +
-                "(SELECT user_id FROM friends WHERE friend_id = ? AND user_id <> ? AND confirmed) OR " +
-                "friend_id IN (SELECT friend_id FROM friends WHERE user_id = ? AND friend_id <> ?))";
         return jdbcTemplate.queryForList(
-                sqlQuery,
+                GET_MUTUAL_FRIENDS,
                 Long.class,
                 userId,
                 anotherUserId,
@@ -51,8 +68,7 @@ public class FriendDBStorage implements FriendStorage {
 
     @Override
     public boolean isFriendshipInitiator(long initiatorId, long friendId) {
-        String sqlQuery = "SELECT user_id FROM friends WHERE user_id = ? AND friend_id = ?";
-        return jdbcTemplate.queryForList(sqlQuery, initiatorId, friendId).size() > 0;
+        return jdbcTemplate.queryForList(CHECK_FRIENDSHIP_INITIATOR, initiatorId, friendId).size() > 0;
     }
 
     @Override
@@ -62,9 +78,13 @@ public class FriendDBStorage implements FriendStorage {
 
     @Override
     public boolean isFriendshipConfirmed(long userId, long anotherUserId) {
-        String sqlQuery =
-                "SELECT confirmed FROM friends WHERE user_id = ? AND friend_id = ? OR user_id = ? AND friend_id = ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, userId, anotherUserId, anotherUserId, userId);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(
+                CHECK_FRIENDSHIP_IS_CONFIRMED,
+                userId,
+                anotherUserId,
+                anotherUserId,
+                userId
+        );
         if (rowSet.next()) {
             return rowSet.getBoolean("confirmed");
         } else {
@@ -75,38 +95,32 @@ public class FriendDBStorage implements FriendStorage {
 
     @Override
     public void confirmFriendship(long initiatorId, long friendId) {
-        String sqlQuery = "UPDATE friends SET confirmed = TRUE WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sqlQuery, friendId, initiatorId);
+        jdbcTemplate.update(CONFIRM_FRIENDSHIP, friendId, initiatorId);
     }
 
     @Override
     public void removeConfirmation(long initiatorId, long friendId) {
-        String sqlQuery = "UPDATE friends SET confirmation = FALSE WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sqlQuery, initiatorId, friendId);
+        jdbcTemplate.update(REMOVE_FRIENDSHIP_CONFIRMATION, initiatorId, friendId);
     }
 
     @Override
     public void removeFriendship(long initiatorId, long friendId) {
-        String sqlQuery = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sqlQuery, initiatorId,friendId);
+        jdbcTemplate.update(REMOVE_FRIENDSHIP, initiatorId, friendId);
     }
 
     @Override
     public void removeUser(long userId) {
-        String sqlQuery = "DELETE FROM friends WHERE user_id = ? OR friend_id = ?";
-        jdbcTemplate.update(sqlQuery, userId, userId);
+        jdbcTemplate.update(REMOVE_USER, userId, userId);
     }
 
     @Override
     public void swapInitiator(long initiatorId, long friendId) {
-        String sqlQuery = "UPDATE friends SET user_id = ? AND friend_id = ? WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sqlQuery, friendId, initiatorId, initiatorId, friendId);
+        jdbcTemplate.update(SWAP_INITIATOR, friendId, initiatorId, initiatorId, friendId);
     }
 
     @Override
     public boolean unableToConfirmFriendship(long initiatorId, long friend_id) {
-        String sqlQuery = "SELECT confirmed FROM friends WHERE user_id = ? AND friend_id = ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, friend_id, initiatorId);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(CHECK_UNABLE_TO_CONFIRM_FRIENDSHIP, friend_id, initiatorId);
         if (rowSet.next()) {
             return !rowSet.getBoolean("confirmed");
         } else {
@@ -116,10 +130,13 @@ public class FriendDBStorage implements FriendStorage {
 
     @Override
     public boolean unableToCreateFriendship(long initiatorId, long friendId) {
-        String sqlQuery = "SELECT confirmed FROM friends " +
-                "WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
-        List<String> rows =
-                jdbcTemplate.queryForList(sqlQuery, String.class, initiatorId, friendId, friendId, initiatorId);
+        List<String> rows = jdbcTemplate.queryForList(
+                CHECK_UNABLE_TO_CREATE_FRIENDSHIP,
+                String.class, initiatorId,
+                friendId,
+                friendId,
+                initiatorId
+        );
         return rows.size() == 0;
     }
 }
