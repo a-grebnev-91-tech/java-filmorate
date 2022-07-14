@@ -26,14 +26,14 @@ public class MpaRatingController {
 
     @GetMapping
     public List<MpaRatingDto> getAll() {
-        log.info("Get all films");
+        log.info("Get all mpa ratings");
         return service.getAll();
     }
 
     @GetMapping("/{id}")
     public MpaRatingDto getById(@PathVariable("id") int id) {
         MpaRatingDto rating = service.get(id);
-        log.info("Get genre {}", rating);
+        log.info("Get mpa rating {}", rating);
         return rating;
     }
 }

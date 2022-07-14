@@ -23,7 +23,7 @@ public class GenreController {
 
     @GetMapping
     public List<FilmGenreDto> getAll() {
-        log.info("Get all films");
+        log.info("Get all genres");
         return service.getAll();
     }
 
