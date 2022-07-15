@@ -2,32 +2,37 @@ package ru.yandex.practicum.filmorate.model.film;
 
 import lombok.*;
 import ru.yandex.practicum.filmorate.model.BaseData;
-import ru.yandex.practicum.filmorate.util.ValidReleaseDate;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Film extends BaseData {
     @Getter
     @Setter
-    @Size(max = 200, message = "Description shouldn't be larger than 200 characters")
     private String description;
     @Getter
     @Setter
-    @Positive(message = "Duration should be greater than 0")
     private int duration;
     @Getter
     @Setter
-    @NotBlank(message = "Name shouldn't be null or empty")
+    private int likeCount;
+    @Getter
+    @Setter
     private String name;
     @Getter
     @Setter
-    @ValidReleaseDate(message = "Release date should be after 1895.12.28")
     private LocalDate releaseDate;
+    @Getter
+    @Setter
+    private MpaRating rating;
+    @Getter
+    @Setter
+    private Set<FilmGenre> genres;
 
-    public Film() {}
+    public Film() {
+        genres = new HashSet<>();
+    }
 
     public Film(long id, String name, String description, LocalDate releaseDate, int duration) {
         super(id);
@@ -35,6 +40,47 @@ public class Film extends BaseData {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        genres = new HashSet<>();
+    }
+
+    public Film(long id,
+                String name,
+                String description,
+                LocalDate releaseDate,
+                int duration,
+                MpaRating rating,
+                Set<FilmGenre> genres) {
+        this(id, name, description, releaseDate, duration);
+        this.rating = rating;
+        if (genres == null) {
+            genres = new HashSet<>();
+        } else {
+            this.genres = genres;
+        }
+    }
+
+    public Film(long id,
+                String name,
+                String description,
+                LocalDate releaseDate,
+                int likeCount,
+                int duration,
+                MpaRating rating,
+                Set<FilmGenre> genres) {
+        this(id, name, description, releaseDate, duration, rating, genres);
+        this.likeCount = likeCount;
+    }
+
+    public void addGenre(FilmGenre genre) {
+        genres.add(genre);
+    }
+
+    public void addLike() {
+        likeCount++;
+    }
+
+    public void removeLike() {
+        likeCount--;
     }
 
     @Override
