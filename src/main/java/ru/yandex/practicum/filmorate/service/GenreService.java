@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.util.mapper.GenreMapper;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class GenreService {
@@ -26,5 +27,17 @@ public class GenreService {
 
     public FilmGenreDto get(int id) {
         return mapper.genreToDto(storage.get(id));
+    }
+
+    public void createFilmGenres(long filmId, Set<FilmGenre> genres) {
+        //todo implement this;
+    }
+
+    public void deleteFilmGenres(long deletedId) {
+        //todo impl this;
+    }
+
+    public Set<FilmGenre> getFilmGenres(long id) {
+        //todo impl this;
     }
 }

@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FilmDto {
+public class FilmWebDto {
     private long id;
     @Size(max = 200, message = "Description shouldn't be larger than 200 characters")
     private String description;

@@ -3,14 +3,11 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.dto.FilmDto;
-import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.dto.FilmWebDto;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.util.mapper.FilmMapper;
 
 import javax.validation.Valid;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -30,36 +27,36 @@ public class FilmController {
     }
 
     @PostMapping
-    public FilmDto create(@RequestBody @Valid FilmDto filmDto) {
-        FilmDto createdFilm = service.createFilm(filmDto);
+    public FilmWebDto create(@RequestBody @Valid FilmWebDto filmWebDto) {
+        FilmWebDto createdFilm = service.createFilm(filmWebDto);
         log.info("Create film {}", createdFilm);
         return createdFilm;
     }
 
     @DeleteMapping("/{id}")
-    public FilmDto delete(@PathVariable final long id) {
-        FilmDto deletedFilm = service.deleteFilm(id);
+    public FilmWebDto delete(@PathVariable final long id) {
+        FilmWebDto deletedFilm = service.deleteFilm(id);
         log.info("Delete film {}", deletedFilm);
         return deletedFilm;
     }
 
     @GetMapping
-    public List<FilmDto> findAll() {
-        List<FilmDto> films = service.getAllFilms();
+    public List<FilmWebDto> findAll() {
+        List<FilmWebDto> films = service.getAllFilms();
         log.info("Get all films");
         return films;
     }
 
     @GetMapping("/{id}")
-    public FilmDto get(@PathVariable final long id){
-        FilmDto readFilm = service.getFilm(id);
+    public FilmWebDto get(@PathVariable final long id){
+        FilmWebDto readFilm = service.getFilm(id);
         log.info("Get {}", readFilm);
         return readFilm;
     }
 
     @GetMapping("/popular")
-    public List<FilmDto> getTop(@RequestParam(defaultValue = "10") final int count) {
-        List<FilmDto> top = service.getTopFilms(count);
+    public List<FilmWebDto> getTop(@RequestParam(defaultValue = "10") final int count) {
+        List<FilmWebDto> top = service.getTopFilms(count);
         log.info("Get top {} films", count);
         return top;
     }
@@ -71,8 +68,8 @@ public class FilmController {
     }
 
     @PutMapping
-    public FilmDto update(@RequestBody @Valid FilmDto filmDto) {
-        FilmDto updatedFilm = service.updateFilm(filmDto);
+    public FilmWebDto update(@RequestBody @Valid FilmWebDto filmWebDto) {
+        FilmWebDto updatedFilm = service.updateFilm(filmWebDto);
         log.info("Update {}", updatedFilm);
         return updatedFilm;
     }

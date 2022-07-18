@@ -2,9 +2,10 @@ package ru.yandex.practicum.filmorate.util.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.dto.repo.FilmRepoDto;
 import ru.yandex.practicum.filmorate.model.film.FilmGenre;
 import ru.yandex.practicum.filmorate.model.film.MpaRating;
-import ru.yandex.practicum.filmorate.model.dto.FilmDto;
+import ru.yandex.practicum.filmorate.model.dto.FilmWebDto;
 import ru.yandex.practicum.filmorate.model.dto.FilmGenreDto;
 import ru.yandex.practicum.filmorate.model.dto.MpaRatingDto;
 import ru.yandex.practicum.filmorate.model.film.Film;
@@ -25,7 +26,7 @@ public class FilmMapper {
         this.mpaMapper = mpaRatingMapper;
     }
 
-    public Film dtoToFilm(FilmDto dto) {
+    public Film webDtoToFilm(FilmWebDto dto) {
         long id = dto.getId();
         String description = dto.getDescription();
         int duration = dto.getDuration();
@@ -36,7 +37,7 @@ public class FilmMapper {
         return new Film(id, name, description, releaseDate, duration, mpaRating, genres);
     }
 
-    public FilmDto filmToDto(Film film) {
+    public FilmWebDto filmToWebDto(Film film) {
         long id = film.getId();
         String description = film.getDescription();
         int duration = film.getDuration();
@@ -46,6 +47,15 @@ public class FilmMapper {
         FilmGenreDto[] genreDtos = genreMapper
                 .batchGenreToDto(List.copyOf(film.getGenres()))
                 .toArray(new FilmGenreDto[0]);
-        return new FilmDto(id, description, duration, name, releaseDate, mpaDto, genreDtos);
+        return new FilmWebDto(id, description, duration, name, releaseDate, mpaDto, genreDtos);
+    }
+
+    //todo impl this
+    public FilmRepoDto filmToRepoDto(Film film) {
+        return null;
+    }
+
+    public Film repoDtoToFilm(FilmRepoDto filmRepoDto, Set<FilmGenre> genres) {
+        return null;
     }
 }
