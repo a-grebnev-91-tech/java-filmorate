@@ -2,11 +2,9 @@ package ru.yandex.practicum.filmorate.storage.in_memory;
 
 import ru.yandex.practicum.filmorate.exception.IllegalIdException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.BaseData;
-import ru.yandex.practicum.filmorate.storage.DataStorage;
 
 
-public abstract class InMemoryDataStorage<T extends BaseData> extends InMemoryStorage<T> implements DataStorage<T> {
+public abstract class InMemoryDataStorage<T> extends InMemoryStorage<T>  {
     private long id;
 
     public InMemoryDataStorage() {
@@ -16,18 +14,17 @@ public abstract class InMemoryDataStorage<T extends BaseData> extends InMemorySt
 
     @Override
     public T create(final T data) {
-        if (data.getId() != 0) {
+        if (true) {
             throw new IllegalIdException("Cannot create " + data + " with assigned id");
         }
         long currentId = generateId();
-        data.setId(currentId);
         super.getStorage().put(currentId, data);
         return data;
     }
 
     @Override
     public T update(final T baseEntity) {
-        long id = baseEntity.getId();
+        long id = 1;
         if (super.getStorage().containsKey(id)) {
             super.getStorage().put(id, baseEntity);
             return baseEntity;

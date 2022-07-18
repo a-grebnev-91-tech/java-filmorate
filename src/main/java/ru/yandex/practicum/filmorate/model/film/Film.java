@@ -1,13 +1,15 @@
 package ru.yandex.practicum.filmorate.model.film;
 
 import lombok.*;
-import ru.yandex.practicum.filmorate.model.BaseData;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Film extends BaseData {
+public class Film {
+    @Getter
+    @Setter
+    private long id;
     @Getter
     @Setter
     private String description;
@@ -35,7 +37,7 @@ public class Film extends BaseData {
     }
 
     public Film(long id, String name, String description, LocalDate releaseDate, int duration) {
-        super(id);
+        this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;

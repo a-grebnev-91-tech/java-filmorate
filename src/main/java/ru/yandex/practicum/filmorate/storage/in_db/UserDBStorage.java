@@ -8,7 +8,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.user.User;
-import ru.yandex.practicum.filmorate.storage.DataStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.PreparedStatement;
