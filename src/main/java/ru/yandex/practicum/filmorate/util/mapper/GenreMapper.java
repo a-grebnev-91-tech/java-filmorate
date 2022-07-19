@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.util.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.dto.FilmGenreDto;
+import ru.yandex.practicum.filmorate.model.dto.web.GenreWebDto;
 import ru.yandex.practicum.filmorate.model.film.FilmGenre;
 
 import java.util.*;
@@ -10,15 +10,15 @@ import java.util.stream.Collectors;
 @Component
 public class GenreMapper {
 
-    public FilmGenre dtoToGenre(FilmGenreDto dto) {
+    public FilmGenre dtoToGenre(GenreWebDto dto) {
         return FilmGenre.getById(dto.getId());
     }
 
-    public FilmGenreDto genreToDto(FilmGenre genre) {
-        return new FilmGenreDto(genre.getId(), genre.getTitle());
+    public GenreWebDto genreToDto(FilmGenre genre) {
+        return new GenreWebDto(genre.getId(), genre.getTitle());
     }
 
-    public List<FilmGenre> batchDtoToGenre(List<FilmGenreDto> dtos) {
+    public List<FilmGenre> batchDtoToGenre(List<GenreWebDto> dtos) {
         List<FilmGenre> genres;
         if (dtos != null) {
             genres = dtos.stream().map(this::dtoToGenre).collect(Collectors.toList());
@@ -28,8 +28,8 @@ public class GenreMapper {
         return genres;
     }
 
-    public List<FilmGenre> batchDtoToGenre(FilmGenreDto[] dtos) {
-        List<FilmGenreDto> list;
+    public List<FilmGenre> batchDtoToGenre(GenreWebDto[] dtos) {
+        List<GenreWebDto> list;
         if (dtos == null) {
             list = null;
         } else {
@@ -38,8 +38,8 @@ public class GenreMapper {
         return batchDtoToGenre(list);
     }
 
-    public List<FilmGenreDto> batchGenreToDto(List<FilmGenre> genres) {
-        List<FilmGenreDto> dtos;
+    public List<GenreWebDto> batchGenreToDto(List<FilmGenre> genres) {
+        List<GenreWebDto> dtos;
         if (genres != null) {
             dtos = genres.stream().map(this::genreToDto).collect(Collectors.toList());
             sort(dtos);
@@ -49,7 +49,7 @@ public class GenreMapper {
         return dtos;
     }
 
-    private void sort(List<FilmGenreDto> list) {
-        list.sort(Comparator.comparingInt(FilmGenreDto::getId));
+    private void sort(List<GenreWebDto> list) {
+        list.sort(Comparator.comparingInt(GenreWebDto::getId));
     }
 }

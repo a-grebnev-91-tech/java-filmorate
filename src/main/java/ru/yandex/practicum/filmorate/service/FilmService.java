@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.dto.FilmWebDto;
+import ru.yandex.practicum.filmorate.model.dto.web.FilmWebDto;
 import ru.yandex.practicum.filmorate.model.dto.repo.FilmRepoDto;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.FilmGenre;
@@ -39,7 +39,7 @@ public class FilmService {
     public void addLike(final long filmId, final long userId) {
         if (!isUserExist(userId)) {
             throw new NotFoundException("User with id " + userId + " isn't exist");
-        } else if (!filmStorage.isExist(filmId)) {
+        } else if (!isFilmExist(filmId)) {
             throw new NotFoundException("Film with id " + filmId + "isn't exist");
         } else {
             ratingService.addLike(filmId, userId);
@@ -47,58 +47,57 @@ public class FilmService {
         }
     }
 
+    //todo think about refactoring
     public FilmWebDto createFilm(final FilmWebDto filmWebDto) {
         Film film = filmMapper.webDtoToFilm(filmWebDto);
+        Set<FilmGenre> filmGenres = film.getGenres();
         FilmRepoDto filmRepoDto = filmMapper.filmToRepoDto(film);
         long createdId = filmStorage.create(filmRepoDto);
+        genreService.addFilmToFilmGenres(createdId, filmGenres);
         film.setId(createdId);
-        genreService.createFilmGenres(createdId, film.getGenres());
         return filmMapper.filmToWebDto(film);
     }
 
     public FilmWebDto deleteFilm(final long filmId) {
-        Film deleted = filmMapper.repoDtoToFilm(filmStorage.get(filmId));
+        Film deleted = getFilmModel(filmId);
         long deletedId = filmStorage.delete(filmId);
         ratingService.deleteFilm(deletedId);
-        genreService.deleteFilmGenres(deletedId);
+        genreService.deleteFilmFromFilmGenres(deletedId);
         return filmMapper.filmToWebDto(deleted);
     }
 
     public List<FilmWebDto> getAllFilms() {
-        return filmStorage
-                .getAll()
-                .stream()
-                .map(repoDto -> filmMapper.repoDtoToFilm(repoDto, getFilmGenres(repoDto.getId()))
-                .map(filmMapper::filmToWebDto)
-                .collect(Collectors.toList());
+        return batchRepoDtoToWebDto(filmStorage.getAll());
+
     }
 
     public FilmWebDto getFilm(final long filmId) {
-        Film film = filmMapper.repoDtoToFilm(filmStorage.get(filmId), );
-        return filmMapper.filmToWebDto(filmStorage.get(filmId));
+        Film film = getFilmModel(filmId);
+        return filmMapper.filmToWebDto(film);
     }
 
     public List<FilmWebDto> getTopFilms(final int count) {
-        return filmStorage.getTop(count).stream().map(filmMapper::filmToWebDto).collect(Collectors.toList());
+        return batchRepoDtoToWebDto(filmStorage.getTop(count));
     }
 
     public void removeLike(final long filmId, final long userId) {
-        if (isUserExist(userId)) {
-            Film film = filmStorage.get(filmId);
-            if (ratingService.removeLike(filmId, userId)) {
-                film.removeLike();
-                filmStorage.update(film);
-            } else {
-                throw new NotFoundException("User with id " + userId + " didn't like the movie with id " + filmId);
-            }
-        } else {
+        if (!isUserExist(userId)) {
             throw new NotFoundException("User with id " + userId + " isn't exist");
+        } else if (!isFilmExist(filmId)) {
+            throw new NotFoundException("Film with id " + filmId + "isn't exist");
+        } else {
+            ratingService.removeLike(filmId, userId);
+            filmStorage.updateLikesCount(filmId);
         }
     }
 
     public FilmWebDto updateFilm(final FilmWebDto filmWebDto) {
         Film film = filmMapper.webDtoToFilm(filmWebDto);
-        return filmMapper.filmToWebDto(filmStorage.update(film));
+        Set<FilmGenre> genres = film.getGenres();
+        genreService.updateFilmGenres(film.getId(), genres);
+        filmStorage.update(filmMapper.filmToRepoDto(film));
+        return filmMapper.filmToWebDto(film)
+                ;
     }
 
     private boolean isFilmExist(final long filmId) {
@@ -110,6 +109,18 @@ public class FilmService {
     }
 
     private Set<FilmGenre> getFilmGenres(long filmId) {
-        return genreService.getFilmGenres(filmId);
+        return genreService.getGenreModelByFilm(filmId);
+    }
+
+    private Film getFilmModel(final long filmId) {
+        return filmMapper.repoDtoToFilm(filmStorage.get(filmId), genreService.getGenreModelByFilm(filmId));
+    }
+
+    private List<FilmWebDto> batchRepoDtoToWebDto(List<FilmRepoDto> webDtos) {
+        return  webDtos
+                .stream()
+                .map(repoDto -> getFilmModel(repoDto.getId()))
+                .map(filmMapper::filmToWebDto)
+                .collect(Collectors.toList());
     }
 }

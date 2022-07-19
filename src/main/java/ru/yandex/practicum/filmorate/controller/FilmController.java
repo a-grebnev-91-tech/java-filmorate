@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.dto.FilmWebDto;
+import ru.yandex.practicum.filmorate.model.dto.web.FilmWebDto;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;

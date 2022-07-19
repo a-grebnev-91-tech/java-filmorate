@@ -5,9 +5,9 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.dto.repo.FilmRepoDto;
 import ru.yandex.practicum.filmorate.model.film.FilmGenre;
 import ru.yandex.practicum.filmorate.model.film.MpaRating;
-import ru.yandex.practicum.filmorate.model.dto.FilmWebDto;
-import ru.yandex.practicum.filmorate.model.dto.FilmGenreDto;
-import ru.yandex.practicum.filmorate.model.dto.MpaRatingDto;
+import ru.yandex.practicum.filmorate.model.dto.web.FilmWebDto;
+import ru.yandex.practicum.filmorate.model.dto.web.GenreWebDto;
+import ru.yandex.practicum.filmorate.model.dto.web.MpaRatingWebDto;
 import ru.yandex.practicum.filmorate.model.film.Film;
 
 import java.time.LocalDate;
@@ -43,19 +43,35 @@ public class FilmMapper {
         int duration = film.getDuration();
         String name = film.getName();
         LocalDate releaseDate = film.getReleaseDate();
-        MpaRatingDto mpaDto = mpaMapper.ratingToDto(film.getRating());
-        FilmGenreDto[] genreDtos = genreMapper
+        MpaRatingWebDto mpaDto = mpaMapper.ratingToDto(film.getRating());
+        GenreWebDto[] genreDtos = genreMapper
                 .batchGenreToDto(List.copyOf(film.getGenres()))
-                .toArray(new FilmGenreDto[0]);
+                .toArray(new GenreWebDto[0]);
         return new FilmWebDto(id, description, duration, name, releaseDate, mpaDto, genreDtos);
     }
 
-    //todo impl this
     public FilmRepoDto filmToRepoDto(Film film) {
-        return null;
+        return new FilmRepoDto(
+                film.getId(),
+                film.getDescription(),
+                film.getDuration(),
+                film.getLikeCount(),
+                film.getName(),
+                film.getReleaseDate(),
+                film.getRating().getId()
+        );
     }
 
     public Film repoDtoToFilm(FilmRepoDto filmRepoDto, Set<FilmGenre> genres) {
-        return null;
+        return new Film(
+                filmRepoDto.getId(),
+                filmRepoDto.getName(),
+                filmRepoDto.getDescription(),
+                filmRepoDto.getReleaseDate(),
+                filmRepoDto.getLikesCount(),
+                filmRepoDto.getDuration(),
+                MpaRating.getById(filmRepoDto.getMpaRatingId()),
+                genres
+        );
     }
 }

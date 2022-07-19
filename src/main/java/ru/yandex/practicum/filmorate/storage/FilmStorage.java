@@ -17,6 +17,8 @@ public interface FilmStorage {
 
     List<FilmRepoDto> getSome(Collection<Long> ids);
 
+    List<FilmRepoDto> getTop(int count);
+
     boolean isExist(long id);
 
     boolean update(FilmRepoDto film);

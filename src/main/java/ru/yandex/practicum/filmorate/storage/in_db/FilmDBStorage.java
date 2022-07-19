@@ -30,7 +30,7 @@ public class FilmDBStorage implements FilmStorage {
     private static final String GET_SOME_BY_ID = "SELECT * FROM users WHERE user_id IN (%s)";
     private static final String GET_TOP_FILMS = "SELECT * FROM films ORDER BY likes_count DESC LIMIT ?";
     private static final String UPDATE_FILM = "UPDATE films SET description = ?, duration = ?, likes_count = ?, " +
-            "name = ?, release_date = ?, rating = ? WHERE film_id = ?";
+            "name = ?, release_date = ?, mpa_rating_id = ? WHERE film_id = ?";
     private static final String UPDATE_LIKES_COUNT = "UPDATE films f SET likes_count = (SELECT COUNT(fl.user_id) " +
             "FROM film_likes fl WHERE fl.film_id = f.film_id) WHERE film_id = ?"; //todo check f.film_id
 
@@ -83,6 +83,11 @@ public class FilmDBStorage implements FilmStorage {
     }
 
     @Override
+    public List<FilmRepoDto> getTop(int count) {
+        return jdbcTemplate.query(GET_TOP_FILMS, (rs, rowNum) -> makeFilmRepoDto(rs), count);
+    }
+
+    @Override
     public boolean isExist(long id) {
         try {
             get(id);
@@ -114,8 +119,7 @@ public class FilmDBStorage implements FilmStorage {
 
     @Override
     public boolean updateLikesCount(long id) {
-
-        return false;
+        return jdbcTemplate.update(UPDATE_LIKES_COUNT, id) > 0;
     }
 
     private FilmRepoDto makeFilmRepoDto(ResultSet rs) throws SQLException {
@@ -125,40 +129,7 @@ public class FilmDBStorage implements FilmStorage {
         int likesCount = rs.getInt("likes_count");
         String name = rs.getString("name");
         LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
-        int mpaRatingId = rs.getInt("mpa_rating_id"));
-        Set<FilmGenre> genres = getGenresByFilmId(id).stream().map(FilmGenre::getByTitle).collect(Collectors.toSet());
+        int mpaRatingId = rs.getInt("mpa_rating_id");
         return new FilmRepoDto(id, description, duration, likesCount, name, releaseDate, mpaRatingId);
-    }
-
-
-
-
-    //todo remove
-    private static final String DELETE_FILM_FROM_FILM_GENRE = "DELETE FROM film_genre WHERE film_id = ?";
-    private static final String GET_GENRES_BY_FILM_ID = "SELECT name FROM genre WHERE genre_id IN " +
-            "(SELECT genre_id FROM film_genre WHERE film_id = ?)";
-    private static final String UPDATE_FILM_GENRE = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
-
-    public List<FilmRepoDto> getTop(int count) {
-        return jdbcTemplate.query(GET_TOP_FILMS, (rs, rowNum) -> makeFilmRepoDto(rs), count);
-    }
-    private void deleteFromFilmGenre(long id) {
-        jdbcTemplate.update(DELETE_FILM_FROM_FILM_GENRE, id);
-    }
-
-    private List<String> getGenresByFilmId(long id) {
-        return jdbcTemplate.queryForList(GET_GENRES_BY_FILM_ID, String.class, id);
-    }
-
-    private void updateFilmGenre(Film film) {
-        long filmId = film.getId();
-        deleteFromFilmGenre(filmId);
-        List<Object[]> batchArgsList = new ArrayList<>();
-        Object[] objArray;
-        for (FilmGenre genre : film.getGenres()) {
-            objArray = new Object[]{filmId, genre.getId()};
-            batchArgsList.add(objArray);
-        }
-        jdbcTemplate.batchUpdate(UPDATE_FILM_GENRE, batchArgsList);
     }
 }

@@ -2,11 +2,12 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.dto.FilmGenreDto;
+import ru.yandex.practicum.filmorate.model.dto.web.GenreWebDto;
 import ru.yandex.practicum.filmorate.model.film.FilmGenre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.util.mapper.GenreMapper;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,23 +22,27 @@ public class GenreService {
         this.storage = storage;
     }
 
-    public List<FilmGenreDto> getAll() {
-        return mapper.batchGenreToDto(storage.getAll());
+    public void addFilmToFilmGenres(long filmId, Set<FilmGenre> genres) {
+        storage.addFilm(filmId, genres);
     }
 
-    public FilmGenreDto get(int id) {
+    public void deleteFilmFromFilmGenres(long filmId) {
+        storage.deleteFilm(filmId);
+    }
+
+    public GenreWebDto get(int id) {
         return mapper.genreToDto(storage.get(id));
     }
 
-    public void createFilmGenres(long filmId, Set<FilmGenre> genres) {
-        //todo implement this;
+    public List<GenreWebDto> getAll() {
+        return mapper.batchGenreToDto(storage.getAll());
     }
 
-    public void deleteFilmGenres(long deletedId) {
-        //todo impl this;
+    public Set<FilmGenre> getGenreModelByFilm(long filmId) {
+        return new HashSet<>(storage.getGenresByFilm(filmId));
     }
 
-    public Set<FilmGenre> getFilmGenres(long id) {
-        //todo impl this;
+    public void updateFilmGenres(long filmId, Set<FilmGenre> genres) {
+        storage.updateFilm(filmId, genres);
     }
 }

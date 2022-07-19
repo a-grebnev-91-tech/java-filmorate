@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.dto;
+package ru.yandex.practicum.filmorate.model.dto.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +25,6 @@ public class FilmWebDto {
     @ValidReleaseDate(message = "Release date should be after 1895.12.28")
     private LocalDate releaseDate;
     @NotNull(message = "Mpa rating shouldn't be null")
-    private MpaRatingDto mpa;
-    private FilmGenreDto[] genres;
+    private MpaRatingWebDto mpa;
+    private GenreWebDto[] genres;
 }

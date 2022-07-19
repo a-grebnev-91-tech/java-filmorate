@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS films
     CONSTRAINT duration_non_negative CHECK (duration >= 0),
     CONSTRAINT like_count_non_negative CHECK (likes_count >= 0),
     CONSTRAINT film_name_not_empty CHECK (name <> ''),
-    CONSTRAINT release_date_is_after CHECK (release_date > '1895-12-28'),
+    CONSTRAINT release_date_is_after CHECK (release_date > '1895-12-28')
 );
 
 CREATE INDEX IF NOT EXISTS film_id_index ON films (film_id);

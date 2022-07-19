@@ -2,8 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.dto.MpaRatingDto;
-import ru.yandex.practicum.filmorate.model.film.MpaRating;
+import ru.yandex.practicum.filmorate.model.dto.web.MpaRatingWebDto;
 import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
 import ru.yandex.practicum.filmorate.util.mapper.MpaRatingMapper;
 
@@ -20,11 +19,11 @@ public class MpaRatingService {
         this.storage = storage;
     }
 
-    public MpaRatingDto get(int id) {
+    public MpaRatingWebDto get(int id) {
         return mapper.ratingToDto(storage.get(id));
     }
 
-    public List<MpaRatingDto> getAll() {
+    public List<MpaRatingWebDto> getAll() {
         return mapper.batchRatingToDto(storage.getAll());
     }
 }

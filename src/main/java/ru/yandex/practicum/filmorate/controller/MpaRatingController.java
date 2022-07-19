@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.dto.MpaRatingDto;
-import ru.yandex.practicum.filmorate.model.film.MpaRating;
+import ru.yandex.practicum.filmorate.model.dto.web.MpaRatingWebDto;
 import ru.yandex.practicum.filmorate.service.MpaRatingService;
 import ru.yandex.practicum.filmorate.util.mapper.MpaRatingMapper;
 
@@ -25,14 +24,14 @@ public class MpaRatingController {
     }
 
     @GetMapping
-    public List<MpaRatingDto> getAll() {
+    public List<MpaRatingWebDto> getAll() {
         log.info("Get all mpa ratings");
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    public MpaRatingDto getById(@PathVariable("id") int id) {
-        MpaRatingDto rating = service.get(id);
+    public MpaRatingWebDto getById(@PathVariable("id") int id) {
+        MpaRatingWebDto rating = service.get(id);
         log.info("Get mpa rating {}", rating);
         return rating;
     }
