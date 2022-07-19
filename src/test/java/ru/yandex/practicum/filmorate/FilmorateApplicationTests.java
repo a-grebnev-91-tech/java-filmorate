@@ -84,56 +84,6 @@ class FilmorateApplicationTests {
         assertEquals(user, updatedUser);
     }
 
-    @Test
-    void test6_shouldCreateFilm() {
-        Film toCreate = getFilm();
-        Film created = filmStorage.create(toCreate);
-        toCreate.setId(created.getId());
-        assertEquals(toCreate, created);
-    }
-
-    @Test
-    void test7_shouldObtainFilmById() {
-        Film toCreate = getFilm();
-        Film created = filmStorage.create(toCreate);
-        long id = created.getId();
-        Film obtained = filmStorage.get(id);
-        assertNotNull(obtained);
-        assertTrue(obtained.getId() > 0);
-    }
-
-    @Test
-    void test8_shouldObtainAllFilms() {
-        Film first = getFilm();
-        filmStorage.create(first);
-        Film second = getAnotherFilm();
-        filmStorage.create(second);
-        List<Film> films = new ArrayList<>(filmStorage.getAll());
-        assertFalse(films.isEmpty());
-        assertEquals(2, films.size());
-        assertTrue(films.get(0).getId() > 0);
-        assertTrue(films.get(1).getId() > 0);
-    }
-
-    @Test
-    void test9_shouldDeleteFilm() {
-        Film toCreate = getFilm();
-        long id = filmStorage.create(toCreate).getId();
-        Film deleted = filmStorage.delete(id);
-        assertNotNull(deleted);
-        assertEquals(id, deleted.getId());
-    }
-
-    @Test
-    void test10_shouldUpdateFilm() {
-        Film film = getFilm();
-        film = filmStorage.create(film);
-        film.setName("My favorite movie");
-        Film updatedFilm = filmStorage.update(film);
-        assertNotNull(updatedFilm);
-        assertEquals(film, updatedFilm);
-    }
-
     private User getUser() {
         return new User(0, "a@a.a", "a", "a", LocalDate.of(1991, 8, 31));
     }
