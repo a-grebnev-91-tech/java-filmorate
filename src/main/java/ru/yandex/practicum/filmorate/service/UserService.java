@@ -13,11 +13,11 @@ import java.util.List;
 
 @Service
 public class UserService {
-    private final UsersFriendsService friendsService;
+    private final FriendsService friendsService;
     private final UserStorage usersStorage;
 
     @Autowired
-    public UserService(@Qualifier("userDBStorage") UserStorage dataStorage, UsersFriendsService friendsService) {
+    public UserService(@Qualifier("userDBStorage") UserStorage dataStorage, FriendsService friendsService) {
         this.usersStorage = dataStorage;
         this.friendsService = friendsService;
     }

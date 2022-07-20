@@ -108,7 +108,7 @@ public class FilmService {
     }
 
     private Set<FilmGenre> getFilmGenres(long filmId) {
-        return genreService.getGenreModelByFilm(filmId);
+        return genreService.getGenresByFilm(filmId);
     }
 
     private Film getFilmModel(final long filmId) {
@@ -117,7 +117,7 @@ public class FilmService {
 
     private Film repoDtoToFilm(FilmRepoDto filmRepoDto) {
         MpaRating rating = mpaRatingService.get(filmRepoDto.getMpaRatingId());
-        Set<FilmGenre> genres = genreService.getGenreModelByFilm(filmRepoDto.getId());
+        Set<FilmGenre> genres = genreService.getGenresByFilm(filmRepoDto.getId());
         return new Film(
                 filmRepoDto.getId(),
                 filmRepoDto.getName(),

@@ -11,11 +11,11 @@ import ru.yandex.practicum.filmorate.storage.FriendStorage;
 import java.util.List;
 
 @Service
-public class UsersFriendsService {
+public class FriendsService {
     private final FriendStorage storage;
 
     @Autowired
-    public UsersFriendsService(@Qualifier("friendsDBStorage") FriendStorage storage) {
+    public FriendsService(@Qualifier("friendsDBStorage") FriendStorage storage) {
         this.storage = storage;
     }
 

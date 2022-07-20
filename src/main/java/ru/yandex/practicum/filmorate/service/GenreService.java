@@ -34,7 +34,7 @@ public class GenreService {
         return storage.getAll();
     }
 
-    public Set<FilmGenre> getGenreModelByFilm(long filmId) {
+    public Set<FilmGenre> getGenresByFilm(long filmId) {
         return new HashSet<>(storage.getGenresByFilm(filmId));
     }
 
