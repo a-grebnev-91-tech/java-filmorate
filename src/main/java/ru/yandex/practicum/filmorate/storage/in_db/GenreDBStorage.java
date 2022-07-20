@@ -19,9 +19,9 @@ public class GenreDBStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
     private static final String ADD_FILM_GENRE = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?)";
     private static final String DELETE_FILM_FROM_FILM_GENRE = "DELETE FROM film_genre WHERE film_id = ?";
-    private static final String GET_ALL = "SELECT name FROM genre ORDER BY genre_id";
-    private static final String GET_BY_ID = "SELECT name FROM genre WHERE genre_id = ?";
-    private static final String GET_GENRES_BY_FILM_ID = "SELECT name FROM genre WHERE genre_id IN " +
+    private static final String GET_ALL = "SELECT * FROM genre ORDER BY genre_id";
+    private static final String GET_BY_ID = "SELECT * FROM genre WHERE genre_id = ?";
+    private static final String GET_GENRES_BY_FILM_ID = "SELECT * FROM genre WHERE genre_id IN " +
             "(SELECT genre_id FROM film_genre WHERE film_id = ?)";
 
 
@@ -72,7 +72,8 @@ public class GenreDBStorage implements GenreStorage {
     }
 
     private FilmGenre makeGenre(ResultSet rs) throws SQLException {
+        int id = rs.getInt("genre_id");
         String name = rs.getString("name");
-        return FilmGenre.getByTitle(name);
+        return new FilmGenre(id, name);
     }
 }

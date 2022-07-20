@@ -93,11 +93,11 @@ class FilmorateApplicationTests {
     }
 
     private Film getFilm() {
-        return new Film(0, "a", "a", LocalDate.of(1991, 8, 31), 120, MpaRating.G, null);
+        return new Film(0, "a", "a", LocalDate.of(1991, 8, 31), 120, new MpaRating(1, "G"), null);
     }
 
     private Film getAnotherFilm() {
-        return new Film(0, "b", "b", LocalDate.of(1991, 8, 31), 120, MpaRating.PG, null);
+        return new Film(0, "b", "b", LocalDate.of(1991, 8, 31), 120, new MpaRating(1, "G"), null);
     }
 
 }

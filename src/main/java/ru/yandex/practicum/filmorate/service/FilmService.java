@@ -8,16 +8,16 @@ import ru.yandex.practicum.filmorate.model.dto.web.FilmWebDto;
 import ru.yandex.practicum.filmorate.model.dto.repo.FilmRepoDto;
 import ru.yandex.practicum.filmorate.model.film.Film;
 import ru.yandex.practicum.filmorate.model.film.FilmGenre;
+import ru.yandex.practicum.filmorate.model.film.MpaRating;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.util.mapper.FilmMapper;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final FilmMapper filmMapper;
     private final FilmRatingService ratingService;
     private final MpaRatingService mpaRatingService;
     private final GenreService genreService;
@@ -27,11 +27,11 @@ public class FilmService {
     public FilmService(@Qualifier("filmDBStorage") FilmStorage filmStorage,
                        FilmRatingService ratingService,
                        UserService userService,
-                       FilmMapper filmMapper, MpaRatingService mpaRatingService, GenreService genreService) {
+                       MpaRatingService mpaRatingService,
+                       GenreService genreService) {
         this.filmStorage = filmStorage;
         this.ratingService = ratingService;
         this.userService = userService;
-        this.filmMapper = filmMapper;
         this.mpaRatingService = mpaRatingService;
         this.genreService = genreService;
     }
@@ -49,13 +49,13 @@ public class FilmService {
 
     //todo think about refactoring
     public FilmWebDto createFilm(final FilmWebDto filmWebDto) {
-        Film film = filmMapper.webDtoToFilm(filmWebDto);
+        Film film = webDtoToFilm(filmWebDto);
         Set<FilmGenre> filmGenres = film.getGenres();
-        FilmRepoDto filmRepoDto = filmMapper.filmToRepoDto(film);
+        FilmRepoDto filmRepoDto = filmToFilmRepoDto(film);
         long createdId = filmStorage.create(filmRepoDto);
         genreService.addFilmToFilmGenres(createdId, filmGenres);
         film.setId(createdId);
-        return filmMapper.filmToWebDto(film);
+        return filmToWebDto(film);
     }
 
     public FilmWebDto deleteFilm(final long filmId) {
@@ -63,7 +63,7 @@ public class FilmService {
         long deletedId = filmStorage.delete(filmId);
         ratingService.deleteFilm(deletedId);
         genreService.deleteFilmFromFilmGenres(deletedId);
-        return filmMapper.filmToWebDto(deleted);
+        return filmToWebDto(deleted);
     }
 
     public List<FilmWebDto> getAllFilms() {
@@ -73,7 +73,7 @@ public class FilmService {
 
     public FilmWebDto getFilm(final long filmId) {
         Film film = getFilmModel(filmId);
-        return filmMapper.filmToWebDto(film);
+        return filmToWebDto(film);
     }
 
     public List<FilmWebDto> getTopFilms(final int count) {
@@ -92,12 +92,11 @@ public class FilmService {
     }
 
     public FilmWebDto updateFilm(final FilmWebDto filmWebDto) {
-        Film film = filmMapper.webDtoToFilm(filmWebDto);
+        Film film = webDtoToFilm(filmWebDto);
         Set<FilmGenre> genres = film.getGenres();
+        filmStorage.update(filmToFilmRepoDto(film));
         genreService.updateFilmGenres(film.getId(), genres);
-        filmStorage.update(filmMapper.filmToRepoDto(film));
-        return filmMapper.filmToWebDto(film)
-                ;
+        return filmToWebDto(film);
     }
 
     private boolean isFilmExist(final long filmId) {
@@ -113,14 +112,83 @@ public class FilmService {
     }
 
     private Film getFilmModel(final long filmId) {
-        return filmMapper.repoDtoToFilm(filmStorage.get(filmId), genreService.getGenreModelByFilm(filmId));
+        return repoDtoToFilm(filmStorage.get(filmId));
+    }
+
+    private Film repoDtoToFilm(FilmRepoDto filmRepoDto) {
+        MpaRating rating = mpaRatingService.get(filmRepoDto.getMpaRatingId());
+        Set<FilmGenre> genres = genreService.getGenreModelByFilm(filmRepoDto.getId());
+        return new Film(
+                filmRepoDto.getId(),
+                filmRepoDto.getName(),
+                filmRepoDto.getDescription(),
+                filmRepoDto.getReleaseDate(),
+                filmRepoDto.getLikesCount(),
+                filmRepoDto.getDuration(),
+                rating,
+                genres
+        );
     }
 
     private List<FilmWebDto> batchRepoDtoToWebDto(List<FilmRepoDto> webDtos) {
         return  webDtos
                 .stream()
                 .map(repoDto -> getFilmModel(repoDto.getId()))
-                .map(filmMapper::filmToWebDto)
+                .map(this::filmToWebDto)
                 .collect(Collectors.toList());
+    }
+
+    private FilmRepoDto filmToFilmRepoDto(Film film) {
+        return new FilmRepoDto(
+                film.getId(),
+                film.getDescription(),
+                film.getDuration(),
+                film.getLikeCount(),
+                film.getName(),
+                film.getReleaseDate(),
+                film.getRating().getId()
+        );
+    }
+
+    private Film webDtoToFilm(FilmWebDto dto) {
+        long id = dto.getId();
+        String description = dto.getDescription();
+        int duration = dto.getDuration();
+        String name = dto.getName();
+        LocalDate releaseDate = dto.getReleaseDate();
+        MpaRating mpa = dto.getMpa();
+        Set<FilmGenre> genres = dto.getGenres() == null ? new HashSet<>() : new HashSet<>(Arrays.asList(dto.getGenres()));
+        return new Film(
+                id,
+                name,
+                description,
+                releaseDate,
+                duration,
+                mpa,
+                genres
+        );
+    }
+
+    private FilmWebDto filmToWebDto(Film film) {
+        long id = film.getId();
+        String description = film.getDescription();
+        int duration = film.getDuration();
+        String name = film.getName();
+        LocalDate releaseDate = film.getReleaseDate();
+        MpaRating mpa = film.getRating();
+        FilmGenre[] genres = film
+                .getGenres()
+                .stream()
+                .sorted(((o1, o2) -> Integer.compare(o1.getId(), o2.getId())))
+                .toArray(FilmGenre[]::new);
+        return new FilmWebDto(
+                id,
+                description,
+                duration,
+                name,
+                releaseDate,
+                mpa,
+                genres
+        );
     }
 }
