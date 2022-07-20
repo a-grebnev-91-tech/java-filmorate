@@ -5,5 +5,5 @@ public interface FilmRatingStorage {
 
     void deleteFilmFromRating(long filmId);
 
-     boolean removeLike(long filmId, long userId);
+    boolean removeLike(long filmId, long userId);
 }

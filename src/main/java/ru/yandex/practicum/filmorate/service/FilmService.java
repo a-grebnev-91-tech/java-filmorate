@@ -4,84 +4,99 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.dto.FilmDto;
+import ru.yandex.practicum.filmorate.model.dto.web.FilmWebDto;
+import ru.yandex.practicum.filmorate.model.dto.repo.FilmRepoDto;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.film.FilmGenre;
+import ru.yandex.practicum.filmorate.model.film.MpaRating;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.util.mapper.FilmMapper;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final FilmMapper mapper;
     private final FilmRatingService ratingService;
+    private final MpaRatingService mpaRatingService;
+    private final GenreService genreService;
     private final UserService userService;
 
     @Autowired
     public FilmService(@Qualifier("filmDBStorage") FilmStorage filmStorage,
                        FilmRatingService ratingService,
                        UserService userService,
-                       FilmMapper mapper) {
+                       MpaRatingService mpaRatingService,
+                       GenreService genreService) {
         this.filmStorage = filmStorage;
         this.ratingService = ratingService;
         this.userService = userService;
-        this.mapper = mapper;
+        this.mpaRatingService = mpaRatingService;
+        this.genreService = genreService;
     }
 
     public void addLike(final long filmId, final long userId) {
-        if (isUserExist(userId)) {
-            Film film = filmStorage.get(filmId);
-            film.addLike();
-            ratingService.addLike(filmId, userId);
-            filmStorage.update(film);
-        } else {
+        if (!isUserExist(userId)) {
             throw new NotFoundException("User with id " + userId + " isn't exist");
+        } else if (!isFilmExist(filmId)) {
+            throw new NotFoundException("Film with id " + filmId + "isn't exist");
+        } else {
+            ratingService.addLike(filmId, userId);
+            filmStorage.updateLikesCount(filmId);
         }
     }
 
-    public FilmDto createFilm(final FilmDto filmDto) {
-        Film film = mapper.dtoToFilm(filmDto);
-        Film created = filmStorage.create(film);
-        return mapper.filmToDto(created);
+    //todo think about refactoring
+    public FilmWebDto createFilm(final FilmWebDto filmWebDto) {
+        Film film = webDtoToFilm(filmWebDto);
+        Set<FilmGenre> filmGenres = film.getGenres();
+        FilmRepoDto filmRepoDto = filmToFilmRepoDto(film);
+        long createdId = filmStorage.create(filmRepoDto);
+        genreService.addFilmToFilmGenres(createdId, filmGenres);
+        film.setId(createdId);
+        return filmToWebDto(film);
     }
 
-    public FilmDto deleteFilm(final long filmId) {
-        Film deleted = filmStorage.delete(filmId);
-        ratingService.deleteFilm(filmId);
-        return mapper.filmToDto(deleted);
+    public FilmWebDto deleteFilm(final long filmId) {
+        Film deleted = getFilmModel(filmId);
+        long deletedId = filmStorage.delete(filmId);
+        ratingService.deleteFilm(deletedId);
+        genreService.deleteFilmFromFilmGenres(deletedId);
+        return filmToWebDto(deleted);
     }
 
-    public List<FilmDto> getAllFilms() {
-        return filmStorage.getAll().stream().map(mapper::filmToDto).collect(Collectors.toList());
+    public List<FilmWebDto> getAllFilms() {
+        return batchRepoDtoToWebDto(filmStorage.getAll());
+
     }
 
-    public FilmDto getFilm(final long filmId) {
-        return mapper.filmToDto(filmStorage.get(filmId));
+    public FilmWebDto getFilm(final long filmId) {
+        Film film = getFilmModel(filmId);
+        return filmToWebDto(film);
     }
 
-    public List<FilmDto> getTopFilms(final int count) {
-        return filmStorage.getTop(count).stream().map(mapper::filmToDto).collect(Collectors.toList());
+    public List<FilmWebDto> getTopFilms(final int count) {
+        return batchRepoDtoToWebDto(filmStorage.getTop(count));
     }
 
     public void removeLike(final long filmId, final long userId) {
-        if (isUserExist(userId)) {
-            Film film = filmStorage.get(filmId);
-            if (ratingService.removeLike(filmId, userId)) {
-                film.removeLike();
-                filmStorage.update(film);
-            } else {
-                throw new NotFoundException("User with id " + userId + " didn't like the movie with id " + filmId);
-            }
-        } else {
+        if (!isUserExist(userId)) {
             throw new NotFoundException("User with id " + userId + " isn't exist");
+        } else if (!isFilmExist(filmId)) {
+            throw new NotFoundException("Film with id " + filmId + "isn't exist");
+        } else {
+            ratingService.removeLike(filmId, userId);
+            filmStorage.updateLikesCount(filmId);
         }
     }
 
-    public FilmDto updateFilm(final FilmDto filmDto) {
-        Film film = mapper.dtoToFilm(filmDto);
-        return mapper.filmToDto(filmStorage.update(film));
+    public FilmWebDto updateFilm(final FilmWebDto filmWebDto) {
+        Film film = webDtoToFilm(filmWebDto);
+        Set<FilmGenre> genres = film.getGenres();
+        filmStorage.update(filmToFilmRepoDto(film));
+        genreService.updateFilmGenres(film.getId(), genres);
+        return filmToWebDto(film);
     }
 
     private boolean isFilmExist(final long filmId) {
@@ -90,5 +105,90 @@ public class FilmService {
 
     private boolean isUserExist(final long userId) {
         return userService.isUserExist(userId);
+    }
+
+    private Set<FilmGenre> getFilmGenres(long filmId) {
+        return genreService.getGenresByFilm(filmId);
+    }
+
+    private Film getFilmModel(final long filmId) {
+        return repoDtoToFilm(filmStorage.get(filmId));
+    }
+
+    private Film repoDtoToFilm(FilmRepoDto filmRepoDto) {
+        MpaRating rating = mpaRatingService.get(filmRepoDto.getMpaRatingId());
+        Set<FilmGenre> genres = genreService.getGenresByFilm(filmRepoDto.getId());
+        return new Film(
+                filmRepoDto.getId(),
+                filmRepoDto.getName(),
+                filmRepoDto.getDescription(),
+                filmRepoDto.getReleaseDate(),
+                filmRepoDto.getLikesCount(),
+                filmRepoDto.getDuration(),
+                rating,
+                genres
+        );
+    }
+
+    private List<FilmWebDto> batchRepoDtoToWebDto(List<FilmRepoDto> webDtos) {
+        return  webDtos
+                .stream()
+                .map(repoDto -> getFilmModel(repoDto.getId()))
+                .map(this::filmToWebDto)
+                .collect(Collectors.toList());
+    }
+
+    private FilmRepoDto filmToFilmRepoDto(Film film) {
+        return new FilmRepoDto(
+                film.getId(),
+                film.getDescription(),
+                film.getDuration(),
+                film.getLikeCount(),
+                film.getName(),
+                film.getReleaseDate(),
+                film.getRating().getId()
+        );
+    }
+
+    private Film webDtoToFilm(FilmWebDto dto) {
+        long id = dto.getId();
+        String description = dto.getDescription();
+        int duration = dto.getDuration();
+        String name = dto.getName();
+        LocalDate releaseDate = dto.getReleaseDate();
+        MpaRating mpa = dto.getMpa();
+        Set<FilmGenre> genres = dto.getGenres() == null ? new HashSet<>() : new HashSet<>(Arrays.asList(dto.getGenres()));
+        return new Film(
+                id,
+                name,
+                description,
+                releaseDate,
+                duration,
+                mpa,
+                genres
+        );
+    }
+
+    private FilmWebDto filmToWebDto(Film film) {
+        long id = film.getId();
+        String description = film.getDescription();
+        int duration = film.getDuration();
+        String name = film.getName();
+        LocalDate releaseDate = film.getReleaseDate();
+        MpaRating mpa = film.getRating();
+        FilmGenre[] genres = film
+                .getGenres()
+                .stream()
+                .sorted(((o1, o2) -> Integer.compare(o1.getId(), o2.getId())))
+                .toArray(FilmGenre[]::new);
+        return new FilmWebDto(
+                id,
+                description,
+                duration,
+                name,
+                releaseDate,
+                mpa,
+                genres
+        );
     }
 }

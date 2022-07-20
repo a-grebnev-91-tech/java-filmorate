@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.model.user;
 
 import lombok.*;
-import ru.yandex.practicum.filmorate.model.BaseData;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 
-public class User extends BaseData {
+public class User {
+    @Getter
+    @Setter
+    private long id;
     @Getter
     @Setter
     @Past
@@ -26,7 +28,7 @@ public class User extends BaseData {
     public User() {}
 
     public User(long id, String email, String login, String name, LocalDate birthday) {
-        super(id);
+        this.id = id;
         this.birthday = birthday;
         this.email = email;
         this.login = login;

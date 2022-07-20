@@ -1,8 +1,10 @@
-package ru.yandex.practicum.filmorate.model.dto;
+package ru.yandex.practicum.filmorate.model.dto.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import ru.yandex.practicum.filmorate.model.film.FilmGenre;
+import ru.yandex.practicum.filmorate.model.film.MpaRating;
 import ru.yandex.practicum.filmorate.util.validator.ValidReleaseDate;
 
 import javax.validation.constraints.NotBlank;
@@ -14,7 +16,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FilmDto {
+public class FilmWebDto {
     private long id;
     @Size(max = 200, message = "Description shouldn't be larger than 200 characters")
     private String description;
@@ -25,6 +27,6 @@ public class FilmDto {
     @ValidReleaseDate(message = "Release date should be after 1895.12.28")
     private LocalDate releaseDate;
     @NotNull(message = "Mpa rating shouldn't be null")
-    private MpaRatingDto mpa;
-    private FilmGenreDto[] genres;
+    private MpaRating mpa;
+    private FilmGenre[] genres;
 }
