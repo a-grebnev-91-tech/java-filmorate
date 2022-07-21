@@ -3,14 +3,14 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.storage.FilmRatingStorage;
+import ru.yandex.practicum.filmorate.storage.FilmLikesStorage;
 
 @Service
 public class FilmRatingService {
-    private final FilmRatingStorage storage;
+    private final FilmLikesStorage storage;
 
     @Autowired
-    public FilmRatingService(@Qualifier("likesDBStorage") FilmRatingStorage storage) {
+    public FilmRatingService(@Qualifier("likesDBStorage") FilmLikesStorage storage) {
         this.storage = storage;
     }
 
@@ -24,5 +24,9 @@ public class FilmRatingService {
 
     public boolean removeLike(final long filmId, final long userId) {
         return storage.removeLike(filmId, userId);
+    }
+
+    public int getLikesCount(long filmId) {
+        return storage.getLikesCount(filmId);
     }
 }

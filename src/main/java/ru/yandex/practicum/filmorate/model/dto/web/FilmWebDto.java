@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model.dto.web;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import ru.yandex.practicum.filmorate.model.film.FilmDirector;
 import ru.yandex.practicum.filmorate.model.film.FilmGenre;
 import ru.yandex.practicum.filmorate.model.film.MpaRating;
 import ru.yandex.practicum.filmorate.util.validator.ValidReleaseDate;
@@ -12,6 +13,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -29,4 +32,19 @@ public class FilmWebDto {
     @NotNull(message = "Mpa rating shouldn't be null")
     private MpaRating mpa;
     private FilmGenre[] genres;
+    private FilmDirector[] directors;
+
+    @Override
+    public String toString() {
+        return "FilmWebDto{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", duration=" + duration +
+                ", name='" + name + '\'' +
+                ", releaseDate=" + releaseDate +
+                ", mpa=" + mpa +
+                ", genres=" + Arrays.toString(genres) +
+                ", directors=" + directors +
+                '}';
+    }
 }

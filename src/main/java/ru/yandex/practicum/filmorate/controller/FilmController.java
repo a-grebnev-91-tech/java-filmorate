@@ -54,6 +54,13 @@ public class FilmController {
         return readFilm;
     }
 
+    @GetMapping("/director/{directorId}") //year, likes
+    public List<FilmWebDto> getByDirectors(@PathVariable long directorId, @RequestParam String sortBy) {
+        List<FilmWebDto> result = service.getFilmsByDirector(directorId, sortBy);
+        log.info("Get films by director with id {}", directorId);
+        return result;
+    }
+
     @GetMapping("/popular")
     public List<FilmWebDto> getTop(@RequestParam(defaultValue = "10") final int count) {
         List<FilmWebDto> top = service.getTopFilms(count);

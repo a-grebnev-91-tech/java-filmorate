@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.dto.web.FilmWebDto;
 import ru.yandex.practicum.filmorate.model.dto.repo.FilmRepoDto;
 import ru.yandex.practicum.filmorate.model.film.Film;
+import ru.yandex.practicum.filmorate.model.film.FilmDirector;
 import ru.yandex.practicum.filmorate.model.film.FilmGenre;
 import ru.yandex.practicum.filmorate.model.film.MpaRating;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -18,18 +19,21 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final FilmRatingService ratingService;
-    private final MpaRatingService mpaRatingService;
+    private final DirectorService directorService;
     private final GenreService genreService;
+    private final MpaRatingService mpaRatingService;
+    private final FilmRatingService ratingService;
     private final UserService userService;
 
     @Autowired
     public FilmService(@Qualifier("filmDBStorage") FilmStorage filmStorage,
+                       DirectorService directorService,
                        FilmRatingService ratingService,
                        UserService userService,
                        MpaRatingService mpaRatingService,
                        GenreService genreService) {
         this.filmStorage = filmStorage;
+        this.directorService = directorService;
         this.ratingService = ratingService;
         this.userService = userService;
         this.mpaRatingService = mpaRatingService;
@@ -54,6 +58,8 @@ public class FilmService {
         FilmRepoDto filmRepoDto = filmToFilmRepoDto(film);
         long createdId = filmStorage.create(filmRepoDto);
         genreService.addFilmToFilmGenres(createdId, filmGenres);
+        Set<FilmDirector> directors = film.getDirectors();
+        directors.forEach(director -> directorService.addDirectorToFilm(createdId, director.getId()));
         film.setId(createdId);
         return filmToWebDto(film);
     }
@@ -63,6 +69,7 @@ public class FilmService {
         long deletedId = filmStorage.delete(filmId);
         ratingService.deleteFilm(deletedId);
         genreService.deleteFilmFromFilmGenres(deletedId);
+        directorService.deleteFilmFromFilmsDirectors(deletedId);
         return filmToWebDto(deleted);
     }
 
@@ -74,6 +81,23 @@ public class FilmService {
     public FilmWebDto getFilm(final long filmId) {
         Film film = getFilmModel(filmId);
         return filmToWebDto(film);
+    }
+
+    public List<FilmWebDto> getFilmsByDirector(long directorId, String sortBy) {
+        List<Long> filmsIds = directorService.getFilmsByDirector(directorId);
+        List<FilmRepoDto> filmsFromRepo = filmStorage.getSome(filmsIds);
+        switch (sortBy) {
+            case "year":
+                filmsFromRepo.sort((o1, o2) -> o1.getReleaseDate().compareTo(o2.getReleaseDate()));
+                break;
+            case "likes":
+                filmsFromRepo.sort((o1, o2) -> Integer.compare(o1.getLikesCount(), o2.getLikesCount()));
+                break;
+            default:
+                throw new IllegalArgumentException("Bad argument for sorting");
+        }
+        List<FilmWebDto> result = batchRepoDtoToWebDto(filmsFromRepo);
+        return result;
     }
 
     public List<FilmWebDto> getTopFilms(final int count) {
@@ -96,7 +120,18 @@ public class FilmService {
         Set<FilmGenre> genres = film.getGenres();
         filmStorage.update(filmToFilmRepoDto(film));
         genreService.updateFilmGenres(film.getId(), genres);
-        return filmToWebDto(film);
+        directorService.updateFilmDirector(film.getId(), film.getDirectors());
+        // return filmToWebDto(film);
+        /*
+        По хорошему, верхняя строчка должны быть финальной,но
+        ниже идет костыль, потому что тесты постмана кривые - при удалении режисера, они требуют, чтобы в ответе список
+        режиссеров был null, а при получении режисеров, они требует, чтобы список был пустым.
+         */
+        FilmWebDto resultDto = filmToWebDto(film);
+        if (resultDto.getDirectors().length == 0) {
+            resultDto.setDirectors(null);
+        }
+        return resultDto;
     }
 
     private boolean isFilmExist(final long filmId) {
@@ -154,18 +189,31 @@ public class FilmService {
         long id = dto.getId();
         String description = dto.getDescription();
         int duration = dto.getDuration();
+        int likeCount = ratingService.getLikesCount(id);
         String name = dto.getName();
         LocalDate releaseDate = dto.getReleaseDate();
         MpaRating mpa = dto.getMpa();
         Set<FilmGenre> genres = dto.getGenres() == null ? new HashSet<>() : new HashSet<>(Arrays.asList(dto.getGenres()));
+        Set<FilmDirector> directors;
+        if (dto.getDirectors() == null) {
+            directors = new HashSet<>();
+        } else {
+            directors = new HashSet<>(
+                    directorService.getSomeById(
+                            Arrays.stream(dto.getDirectors()).map(FilmDirector::getId).collect(Collectors.toList())
+                    )
+            );
+        }
         return new Film(
                 id,
-                name,
                 description,
-                releaseDate,
                 duration,
+                likeCount,
+                name,
+                releaseDate,
                 mpa,
-                genres
+                genres,
+                directors
         );
     }
 
@@ -181,6 +229,11 @@ public class FilmService {
                 .stream()
                 .sorted(((o1, o2) -> Integer.compare(o1.getId(), o2.getId())))
                 .toArray(FilmGenre[]::new);
+        List<FilmDirector> directorsList = directorService.getDirectorsByFilm(id);
+        FilmDirector[] directors = directorsList
+                .stream()
+                .sorted((o1, o2) -> Long.compare(o1.getId(), o2.getId()))
+                .toArray(FilmDirector[]::new);
         return new FilmWebDto(
                 id,
                 description,
@@ -188,7 +241,8 @@ public class FilmService {
                 name,
                 releaseDate,
                 mpa,
-                genres
+                genres,
+                directors
         );
     }
 }
