@@ -28,14 +28,14 @@ public class DirectorController {
 
     @DeleteMapping("/{id}")
     public FilmDirector delete(@PathVariable long id) {
-        FilmDirector deleted = service.delete(id);
+        FilmDirector deleted = service.deleteDirector(id);
         log.info("Delete ", deleted);
         return deleted;
     }
 
     @GetMapping("/{id}")
     public FilmDirector get(@PathVariable long id) {
-        FilmDirector received = service.get(id);
+        FilmDirector received = service.getDirector(id);
         log.info("Received {}", received);
         return received;
     }
@@ -43,12 +43,12 @@ public class DirectorController {
     @GetMapping
     public List<FilmDirector> getAll() {
         log.info("Received all directors");
-        return service.getAll();
+        return service.getAllDirectors();
     }
 
     @PutMapping
     public FilmDirector update(@RequestBody FilmDirector director) {
-        FilmDirector updated = service.update(director);
+        FilmDirector updated = service.updateDirector(director);
         log.info("Update {}", updated);
         return updated;
     }

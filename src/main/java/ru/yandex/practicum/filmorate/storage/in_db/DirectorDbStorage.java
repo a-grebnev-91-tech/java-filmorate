@@ -12,16 +12,27 @@ import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 @Component
 public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
-    private static String INSERT_DIRECTOR = "INSERT INTO directors (name) VALUES (?)";
-    private static String DELETE_DIRECTOR = "DELETE FROM directors WHERE director_id = ?";
-    private static String GET_DIRECTOR = "SELECT * FROM directors WHERE director_id = ?";
-    private static String GET_ALL_DIRECTOR = "SELECT * FROM directors";
-    private static String UPDATE_DIRECTOR = "UPDATE directors SET name = ? WHERE director_id = ?";
+    private static final String DELETE_DIRECTOR = "DELETE FROM directors WHERE director_id = ?";
+    private static final String DELETE_DIRECTOR_FROM_FILMS_DIRECTORS =
+            "DELETE FROM films_directors WHERE director_id = ?";
+    private static final String DELETE_FILM_FROM_FILMS_DIRECTORS =
+            "DELETE FROM films_directors WHERE film_id = ?";
+    private static final String GET_ALL_DIRECTOR = "SELECT * FROM directors";
+    private static final String GET_DIRECTOR = "SELECT * FROM directors WHERE director_id = ?";
+    private static final String GET_DIRECTOR_BY_FILM =
+            "SELECT * FROM directors WHERE director_id = (SELECT director_id FROM films_directors WHERE film_id = ?)";
+    private static final String GET_FILM_BY_DIRECTOR = "SELECT film_id FROM films_directors WHERE director_id = ?";
+    private static final String GET_SOME_DIRECTORS_BY_ID = "SELECT * FROM directors WHERE director_id IN (%s)";
+    private static final String INSERT_DIRECTOR = "INSERT INTO directors (name) VALUES (?)";
+    private static final String INSERT_TO_FILMS_DIRECTORS =
+            "INSERT INTO films_directors (film_id, director_id) VALUES (?, ?)";
+    private static final String UPDATE_DIRECTOR = "UPDATE directors SET name = ? WHERE director_id = ?";
 
     @Autowired
     public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
@@ -29,7 +40,12 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public long create(FilmDirector director) {
+    public void addDirectorToFilm(long filmId, long directorId) {
+        jdbcTemplate.update(INSERT_TO_FILMS_DIRECTORS, filmId, directorId);
+    }
+
+    @Override
+    public long createDirector(FilmDirector director) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(INSERT_DIRECTOR, new String[]{"director_id"});
@@ -40,14 +56,25 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public FilmDirector delete(long id) {
-        FilmDirector toDelete = get(id);
+    public FilmDirector deleteDirector(long id) {
+        FilmDirector toDelete = getDirector(id);
+        deleteDirectorFromFilmsDirectors(id);
         jdbcTemplate.update(DELETE_DIRECTOR, id);
         return toDelete;
     }
 
     @Override
-    public FilmDirector get(long id) {
+    public void deleteDirectorFromFilmsDirectors(long directorIds) {
+        jdbcTemplate.update(DELETE_DIRECTOR_FROM_FILMS_DIRECTORS, directorIds);
+    }
+
+    @Override
+    public void deleteFilmFromFilmsDirectors(long filmId) {
+        jdbcTemplate.update(DELETE_FILM_FROM_FILMS_DIRECTORS, filmId);
+    }
+
+    @Override
+    public FilmDirector getDirector(long id) {
         List<FilmDirector> directors = jdbcTemplate.query(GET_DIRECTOR, (rs, rowNum) -> makeDirector(rs), id);
         if (directors.isEmpty()) {
             throw new NotFoundException(String.format("Director with id %d isn't exist", id));
@@ -56,16 +83,51 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public List<FilmDirector> getAll() {
+    public List<FilmDirector> getDirectorsByFilm(long filmId) {
+        List<FilmDirector> directors = jdbcTemplate.query(GET_DIRECTOR_BY_FILM, (rs, rowNum) -> {
+            System.out.println(rowNum);
+            return makeDirector(rs);
+        }, filmId);
+        return directors;
+    }
+
+    @Override
+    public List<Long> getFilmsByDirectors(long directorId) {
+        List<Long> filmIds = jdbcTemplate.queryForList(GET_FILM_BY_DIRECTOR, Long.class, directorId);
+        if (filmIds.isEmpty()) {
+            throw new NotFoundException(String.format("Director with id %d has no films", directorId));
+        }
+        return filmIds;
+    }
+
+    @Override
+    public List<FilmDirector> getAllDirectors() {
         return jdbcTemplate.query(GET_ALL_DIRECTOR, (rs, rowNum) -> makeDirector(rs));
     }
 
     @Override
-    public boolean update(FilmDirector director) {
+    public List<FilmDirector> getSomeDirectors(List<Long> directorsIds) {
+        String placeholders = String.join(",", Collections.nCopies(directorsIds.size(), "?"));
+        String sqlQuery = String.format(GET_SOME_DIRECTORS_BY_ID, placeholders);
+        return jdbcTemplate.query(sqlQuery, directorsIds.toArray(),(rs, rowNum) -> makeDirector(rs));
+    }
+
+    @Override
+    public boolean updateDirector(FilmDirector director) {
         return jdbcTemplate.update(UPDATE_DIRECTOR, director.getName(), director.getId()) > 0;
     }
 
+    @Override
+    public void updateFilmDirector(long filmId, List<Long> directorsIds) {
+        deleteFilmFromFilmsDirectors(filmId);
+        for (Long directorId : directorsIds) {
+            addDirectorToFilm(filmId, directorId);
+        }
+    }
+
     private FilmDirector makeDirector(ResultSet rs) throws SQLException {
-        return new FilmDirector(rs.getInt("director_id"), rs.getString("name"));
+        long id = rs.getLong("director_id");
+        String name = rs.getString("name");
+        return new FilmDirector(id, name);
     }
 }

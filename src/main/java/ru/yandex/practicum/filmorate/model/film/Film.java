@@ -31,6 +31,9 @@ public class Film {
     @Getter
     @Setter
     private Set<FilmGenre> genres;
+    @Getter
+    @Setter
+    private Set<FilmDirector> directors;
 
     public Film() {
         genres = new HashSet<>();
@@ -43,6 +46,7 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
         genres = new HashSet<>();
+        directors = new HashSet<>();
     }
 
     public Film(long id,
@@ -54,9 +58,7 @@ public class Film {
                 Set<FilmGenre> genres) {
         this(id, name, description, releaseDate, duration);
         this.rating = rating;
-        if (genres == null) {
-            genres = new HashSet<>();
-        } else {
+        if (genres != null) {
             this.genres = genres;
         }
     }
@@ -71,6 +73,19 @@ public class Film {
                 Set<FilmGenre> genres) {
         this(id, name, description, releaseDate, duration, rating, genres);
         this.likeCount = likeCount;
+    }
+
+    public Film(long id,
+                String description,
+                int duration,
+                int likeCount,
+                String name,
+                LocalDate releaseDate,
+                MpaRating rating,
+                Set<FilmGenre> genres,
+                Set<FilmDirector> directors) {
+        this(id, name, description, releaseDate, likeCount, duration, rating, genres);
+        this.directors = directors;
     }
 
     public void addGenre(FilmGenre genre) {

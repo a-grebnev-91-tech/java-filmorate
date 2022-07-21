@@ -11,7 +11,6 @@ import javax.validation.constraints.Positive;
 public class FilmDirector {
     @Positive
     private long id;
-    @NotEmpty
     private String name;
 
     @Override

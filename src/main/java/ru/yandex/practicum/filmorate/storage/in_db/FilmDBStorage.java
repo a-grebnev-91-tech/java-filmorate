@@ -27,7 +27,7 @@ public class FilmDBStorage implements FilmStorage {
     private static final String DELETE_FILM = "DELETE FROM films WHERE film_id = ?";
     private static final String GET_FILM = "SELECT * FROM films WHERE film_id = ?";
     private static final String GET_ALL_FILMS = "SELECT * FROM films";
-    private static final String GET_SOME_BY_ID = "SELECT * FROM users WHERE user_id IN (%s)";
+    private static final String GET_SOME_BY_ID = "SELECT * FROM films WHERE film_id IN (%s)";
     private static final String GET_TOP_FILMS = "SELECT * FROM films ORDER BY likes_count DESC LIMIT ?";
     private static final String UPDATE_FILM = "UPDATE films SET description = ?, duration = ?, likes_count = ?, " +
             "name = ?, release_date = ?, mpa_rating_id = ? WHERE film_id = ?";
@@ -79,7 +79,7 @@ public class FilmDBStorage implements FilmStorage {
     public List<FilmRepoDto> getSome(Collection<Long> ids) {
         String placeholders = String.join(",", Collections.nCopies(ids.size(), "?"));
         String sqlQuery = String.format(GET_SOME_BY_ID, placeholders);
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilmRepoDto(rs));
+        return jdbcTemplate.query(sqlQuery, ids.toArray(), (rs, rowNum) -> makeFilmRepoDto(rs));
     }
 
     @Override

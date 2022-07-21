@@ -56,7 +56,9 @@ public class FilmController {
 
     @GetMapping("/director/{directorId}") //year, likes
     public List<FilmWebDto> getByDirectors(@PathVariable long directorId, @RequestParam String sortBy) {
-        throw new RuntimeException("not implemented");
+        List<FilmWebDto> result = service.getFilmsByDirector(directorId, sortBy);
+        log.info("Get films by director with id {}", directorId);
+        return result;
     }
 
     @GetMapping("/popular")
